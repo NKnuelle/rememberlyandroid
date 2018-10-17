@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Rememberly</string>
+    <string name="deleteMessage">Are you sure?</string>
+    <string name="deleteButton">Delete</string>
+    <string name="cancelButton">Cancel</string>
+    <string name="shareMessage">Share the list with: </string>
+    <string name="shareButton">Share</string>
+    <string name="shareDialogHint">username</string>
+    <string name="shareDialogUsernameRequired">username is required</string>
+    <string name="renameDialogHint">New listname</string>
+    <string name="renameDialogRequired">listname is required</string>
+    <string name="renameButton">Rename</string>
+    <string name="renameMessage">Rename todolist to:</string>
+</resources>
