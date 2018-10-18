@@ -3,12 +3,19 @@
     <string name="deleteMessage">Are you sure?</string>
     <string name="deleteButton">Delete</string>
     <string name="cancelButton">Cancel</string>
-    <string name="shareMessage">Share the list with: </string>
+    <string name="shareMessage">Share the list with:</string>
+    <string name="shareNoticeMessage">Share the notice with:</string>
     <string name="shareButton">Share</string>
     <string name="shareDialogHint">username</string>
     <string name="shareDialogUsernameRequired">username is required</string>
-    <string name="renameDialogHint">New listname</string>
-    <string name="renameDialogRequired">listname is required</string>
+    <string name="renameListHint">New listname</string>
+    <string name="renameListRequired">listname is required</string>
+    <string name="renameNoticeHint">New notice name</string>
+    <string name="renameNoticeRequired">notice name is required</string>
     <string name="renameButton">Rename</string>
     <string name="renameMessage">Rename todolist to:</string>
+    <string name="renameNoticeMessage">Rename notice to:</string>
+    <string name="inputNewListName">Enter new list name</string>
+    <string name="inputNewNoticeName">Enter new notice name</string>
+    <string name="inputNewTodo">Enter new todo</string>
 </resources>

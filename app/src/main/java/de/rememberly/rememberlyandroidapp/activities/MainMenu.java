@@ -2,9 +2,11 @@ package de.rememberly.rememberlyandroidapp.activities;
 
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import de.rememberly.rememberlyandroidapp.R;
@@ -20,6 +22,12 @@ public class MainMenu extends AppCompatActivity {
 
         todolists = findViewById(R.id.todolists);
         notices = findViewById(R.id.notices);
+        LinearLayout linearLayout = findViewById(R.id.AnimationRootLayout);
+        AnimationDrawable animationDrawable = (AnimationDrawable) linearLayout.getBackground();
+        animationDrawable.setEnterFadeDuration(2000);
+        animationDrawable.setExitFadeDuration(4000);
+        animationDrawable.start();
+
 
 
         todolists.setOnClickListener(new View.OnClickListener() {

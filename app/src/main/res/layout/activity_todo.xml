@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- A RecyclerView with some commonly used attributes -->
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 <ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/android_gradient_list"
+    android:id="@+id/AnimationRootLayout"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,12 +37,13 @@
                 android:src="@mipmap/rememberly_add" />
 
             <EditText
-                android:id="@+id/edittodo"
+                android:id="@+id/newListItemInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
                 android:inputType="textLongMessage"
-                android:imeOptions="actionDone" />
+                android:imeOptions="actionDone"
+                android:hint="@string/inputNewTodo"/>
         </LinearLayout>
 
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -73,3 +81,4 @@
     </LinearLayout>
     </LinearLayout>
 </ScrollView>
+</android.support.v4.widget.SwipeRefreshLayout>

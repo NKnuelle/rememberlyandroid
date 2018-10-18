@@ -1,7 +1,10 @@
 package de.rememberly.rememberlyandroidapp.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -41,17 +45,25 @@ public class TodoActivity extends AppCompatActivity {
     private ImageButton imageButton;
     private Button doneTodoButton;
     private EditText todoEdit;
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo);
 
+        // set background animation:
+        ScrollView scrollView = findViewById(R.id.AnimationRootLayout);
+        AnimationDrawable animationDrawable = (AnimationDrawable) scrollView.getBackground();
+        animationDrawable.setEnterFadeDuration(2000);
+        animationDrawable.setExitFadeDuration(4000);
+        animationDrawable.start();
+
         todoRecyclerView = findViewById(R.id.todo_recycler_view);
         doneTodoRecyclerView = findViewById(R.id.checkedtodolist);
         imageButton = findViewById(R.id.imageButton);
         doneTodoButton = findViewById(R.id.checkedtodobutton);
-        todoEdit = findViewById(R.id.edittodo);
+        todoEdit = findViewById(R.id.newListItemInput);
         todoManager = new LinearLayoutManager(this);
         doneTodoManager = new LinearLayoutManager(this);
         todoRecyclerView.setLayoutManager(todoManager);
@@ -63,6 +75,7 @@ public class TodoActivity extends AppCompatActivity {
         todoRecyclerView.setAdapter(todoAdapter);
         doneTodoButton.setVisibility(View.GONE);
         doneTodoRecyclerView.setVisibility(View.GONE);
+        setupSwipeAndRefresh();
         initTodos();
         initImagebutton();
         initDoneButton();
@@ -111,6 +124,28 @@ public class TodoActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    private void setupSwipeAndRefresh() {
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                todoData.clear();
+                doneTodoData.clear();
+                todoAdapter.notifyDataSetChanged();
+                doneTodoAdapter.notifyDataSetChanged();
+                initTodos();
+                swipeContainer.setRefreshing(false);
+            }
+        });
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
     }
     public void setTodoDone(Todo todo, int position) {
         todoData.remove(position);

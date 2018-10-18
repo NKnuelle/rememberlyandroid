@@ -1,5 +1,7 @@
 package de.rememberly.rememberlyandroidapp.activities;
 
+import android.graphics.drawable.AnimationDrawable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -31,20 +34,29 @@ public class TodolistActivity extends AppCompatActivity {
     private ArrayList<Todolist> todoData = new ArrayList<Todolist>();;
     private ImageButton imageButton;
     private EditText todoEdit;
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_overview);
+        // set background animation:
+        LinearLayout linearLayout = findViewById(R.id.AnimationRootLayout);
+        AnimationDrawable animationDrawable = (AnimationDrawable) linearLayout.getBackground();
+        animationDrawable.setEnterFadeDuration(2000);
+        animationDrawable.setExitFadeDuration(4000);
+        animationDrawable.start();
 
         todoRecyclerView = findViewById(R.id.listRecyclerView);
         todoManager = new LinearLayoutManager(this);
-        todoEdit = findViewById(R.id.edittodo);
+        todoEdit = findViewById(R.id.newListItemInput);
+        todoEdit.setHint(getResources().getString(R.string.inputNewListName));
         todoRecyclerView.setLayoutManager(todoManager);
         imageButton = findViewById(R.id.imageButton);
         userService = ApiUtils.getUserService();
         todolistAdapter = new TodolistAdapter(todoData);
         todoRecyclerView.setAdapter(todolistAdapter);
+        setupSwipeAndRefresh();
         initImagebutton();
         initTodolists();
     }
@@ -92,7 +104,7 @@ public class TodolistActivity extends AppCompatActivity {
                         todolistAdapter.notifyItemInserted(todoData.size() - 1);
                     }
                 } else {
-                    Log.e("Error: ",response.body().toString());
+                    Log.e("Error: ",response.errorBody().toString());
                 }
             }
 
@@ -101,6 +113,27 @@ public class TodolistActivity extends AppCompatActivity {
 
             }
         });
+    }
+    private void setupSwipeAndRefresh() {
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                getAndStoreNewToken();
+                todoData.clear();
+                todolistAdapter.notifyDataSetChanged();
+                initTodolists();
+                swipeContainer.setRefreshing(false);
+            }
+        });
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
     }
     private void getAndStoreNewToken() {
         Call<Token> call = userService.newToken("Bearer " + ApiUtils.getUserToken(this));

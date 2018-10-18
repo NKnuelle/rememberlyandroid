@@ -28,7 +28,8 @@
         <activity android:name=".activities.MainMenu" />
         <activity android:name=".activities.TodolistActivity" />
         <activity android:name=".activities.TodoActivity" />
-        <activity android:name=".activities.NoticeActivity"></activity>
+        <activity android:name=".activities.NoticeActivity"/>
+        <activity android:name=".activities.NoticesOverviewActivity"/>
     </application>
 
 </manifest>

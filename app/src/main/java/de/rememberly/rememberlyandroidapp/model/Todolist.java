@@ -2,11 +2,12 @@ package de.rememberly.rememberlyandroidapp.model;
 
 public class Todolist {
 
-    public Todolist(String list_id, String list_name, String created_at, String owner) {
+    public Todolist(String list_id, String list_name, String created_at, String owner, String isShared) {
         this.list_id = list_id;
         this.list_name = list_name;
         this.created_at = created_at;
         this.owner = owner;
+        this.isShared = isShared;
     }
     public Todolist(String list_name) {
         this.list_name = list_name;
@@ -48,4 +49,14 @@ public class Todolist {
     private String created_at;
     private String owner;
     private String list_id;
+
+    public boolean IsShared() {
+        return (isShared.equals("1"));
+    }
+
+    public void setShared(String isShared) {
+        this.isShared = isShared;
+    }
+
+    private String isShared;
 }

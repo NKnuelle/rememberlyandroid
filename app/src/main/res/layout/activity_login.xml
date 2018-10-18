@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:windowSoftInputMode="adjustResize"
     android:background="@drawable/android_gradient_list"
-    android:id="@+id/loginRootLayout"
+    android:id="@+id/AnimationRootLayout"
     tools:context=".activities.LoginActivity">
 
     <TextView

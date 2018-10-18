@@ -35,8 +35,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.google.android.gms.common.api.CommonStatusCodes.RESOLUTION_REQUIRED;
-
 public class LoginActivity extends AppCompatActivity {
 
     EditText loginField;
@@ -45,6 +43,8 @@ public class LoginActivity extends AppCompatActivity {
     UserService userService;
     CredentialsClient googleCredentialsClient;
     CredentialRequest googleCredentialRequest;
+    final int RC_READ = 100;
+    final int RC_SAVE = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,32 +55,36 @@ public class LoginActivity extends AppCompatActivity {
         String userToken = ApiUtils.getUserToken(this);
         Log.i("Usertoken is: ", userToken);
         if (!TextUtils.isEmpty(userToken)) {
-            Call<ReturnMessage> call = userService.tokenLogin("Bearer " + userToken);
-            call.enqueue(new Callback<ReturnMessage>() {
-                @Override
-                public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
-                    if (response.isSuccessful()) {
-                        ReturnMessage returnMessage = response.body();
-                        Intent intent = new Intent(LoginActivity.this, MainMenu.class);
-                        startActivity(intent);
-
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Session expired, please login.",
-                                Toast.LENGTH_LONG).show();
-                        buildActivity();
-                    }
-                }
-
-
-                @Override
-                public void onFailure(Call<ReturnMessage> call, Throwable t) {
-                    Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
+            tokenLogin(userToken);
         } else {
             buildActivity();
         }
+    }
+    private void tokenLogin(String userToken) {
+        Call<ReturnMessage> call = userService.tokenLogin("Bearer " + userToken);
+        call.enqueue(new Callback<ReturnMessage>() {
+            @Override
+            public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
+                if (response.isSuccessful()) {
+                    ReturnMessage returnMessage = response.body();
+                    Intent intent = new Intent(LoginActivity.this, MainMenu.class);
+                    startActivity(intent);
+                    LoginActivity.this.finish();
+
+                } else {
+                    Toast.makeText(LoginActivity.this, "Session expired, please login.",
+                            Toast.LENGTH_LONG).show();
+                    buildActivity();
+                }
+            }
+
+
+            @Override
+            public void onFailure(Call<ReturnMessage> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
     private void buildActivity() {
         // Build Login Activity
@@ -90,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         passwordField = findViewById(R.id.passwordfield);
         loginButton = findViewById(R.id.loginbutton);
 
-        ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.loginRootLayout);
+        ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.AnimationRootLayout);
         AnimationDrawable animationDrawable = (AnimationDrawable) constraintLayout.getBackground();
         animationDrawable.setEnterFadeDuration(2000);
         animationDrawable.setExitFadeDuration(4000);
@@ -140,7 +144,7 @@ public class LoginActivity extends AppCompatActivity {
                     storeCredentials(username, password);
                     Intent intent = new Intent(LoginActivity.this, MainMenu.class);
                     startActivity(intent);
-
+                    LoginActivity.this.finish();
                 } else {
                     Toast.makeText(LoginActivity.this, "Username or password incorrect",
                             Toast.LENGTH_LONG).show();
@@ -168,7 +172,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // ...
 
-        if (requestCode == RESOLUTION_REQUIRED) {
+        if (requestCode == RC_READ) {
             if (resultCode == RESULT_OK) {
                 Credential credentials = data.getParcelableExtra(Credential.EXTRA_KEY);
                 doLogin(credentials.getId(), credentials.getPassword());
@@ -188,6 +192,32 @@ public class LoginActivity extends AppCompatActivity {
                 // sign-in forms, so repurposing this field will
                 // likely cause errors.
                 .build();
+        googleCredentialsClient.save(credential).addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if (task.isSuccessful()) {
+                            Log.d("Status: ", "SAVE: OK");
+                            return;
+                        }
+
+                        Exception e = task.getException();
+                        if (e instanceof ResolvableApiException) {
+                            // Try to resolve the save request. This will prompt the user if
+                            // the credential is new.
+                            ResolvableApiException rae = (ResolvableApiException) e;
+                            try {
+                                rae.startResolutionForResult(LoginActivity.this, RC_SAVE);
+                            } catch (IntentSender.SendIntentException exception) {
+                                // Could not resolve the request
+                                Log.e("Status: ", "Failed to send resolution.", e);
+                                Toast.makeText(LoginActivity.this, "Save failed", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            // Request has no resolution
+                            Toast.makeText(LoginActivity.this, "Save failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
 
     }
     private void setupSmartlock() {
@@ -212,7 +242,6 @@ public class LoginActivity extends AppCompatActivity {
                             // credentials and needs to pick one. This requires showing UI to
                             // resolve the read request.
                             ResolvableApiException rae = (ResolvableApiException) e;
-                            final int RC_READ = ((ResolvableApiException) e).getStatusCode();
                             resolveResult(rae, RC_READ);
                         } else if (e instanceof ApiException) {
                             // The user must create an account or sign in manually.

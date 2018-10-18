@@ -1,11 +1,12 @@
 package de.rememberly.rememberlyandroidapp.model;
 
 public class Notice {
-    public Notice(String createdAt, String noticeName, String noticeID, String owner) {
+    public Notice(String createdAt, String noticeName, String noticeID, String owner, String isShared) {
         this.createdAt = createdAt;
         this.noticeName = noticeName;
         this.noticeID = noticeID;
         this.owner = owner;
+        this.isShared = isShared;
     }
 
     public Notice(String noticeName) {
@@ -48,5 +49,15 @@ public class Notice {
     private String noticeName;
     private String noticeID;
     private String owner;
+    private String isShared;
+
+    public boolean isShared() {
+        return (isShared.equals("1"));
+    }
+
+    public void setIsShared(String isShared) {
+        this.isShared = isShared;
+    }
+
 
 }

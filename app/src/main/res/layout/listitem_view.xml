@@ -30,4 +30,9 @@
         android:text="&#8942;"
         android:textSize="20sp"
         android:textAppearance="?android:textAppearanceLarge" />
+    <ImageView
+        android:id="@+id/shareIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/rememberly_share"/>
 </RelativeLayout>

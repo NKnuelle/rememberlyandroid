@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,10 +39,12 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
 
         public TextView todoView;
         public TextView todoViewOptions;
+        private ImageView shareIcon;
         public TodoViewHolder(View view) {
             super(view);
             todoView = view.findViewById(R.id.textView);
             todoViewOptions = view.findViewById(R.id.textViewOptions);
+            shareIcon = view.findViewById(R.id.shareIcon);
         }
     }
         public TodolistAdapter(ArrayList<Todolist> dataset) {
@@ -51,7 +54,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
         public TodolistAdapter.TodoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // create a new view
             View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.todolist_text_view, parent, false);
+                    .inflate(R.layout.listitem_view, parent, false);
 
             TodoViewHolder vh = new TodoViewHolder(v);
             return vh;
@@ -64,7 +67,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
         // - replace the contents of the view with that element
         initTodoview(holder, position);
         initOptionsMenu(holder, position);
-
+        initShareIcon(holder, position);
     }
     private void initTodoview(final TodoViewHolder holder, final int position) {
         holder.todoView.setText(todoData.get(position).getList_name());
@@ -78,13 +81,23 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
             }
         });
     }
+    private void initShareIcon(final TodoViewHolder holder, final int position) {
+        if (!todoData.get(position).IsShared()) {
+            holder.shareIcon.setVisibility(View.GONE);
+        }
+    }
     private void initOptionsMenu(final TodoViewHolder holder, final int position) {
         holder.todoViewOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Context context = holder.todoViewOptions.getContext();
+
                 final PopupMenu popupMenu = new PopupMenu(context, holder.todoViewOptions);
                 popupMenu.inflate(R.menu.listoptions);
+                // hide menu if list is already shared
+                    if (todoData.get(position).IsShared()) {
+                    popupMenu.getMenu().findItem(R.id.optionsshare).setVisible(false);
+                }
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -97,7 +110,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                                 showRenameDialog(list, context, position);
                                 break;
                             case R.id.optionsshare:
-                                showShareDialog(list, context);
+                                showShareDialog(list, context, position);
                                 break;
                         }
                         return false;
@@ -114,7 +127,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
      @param context The context (activity) used for the dialog
 
      **/
-    private void showShareDialog(final Todolist list, final Context context) {
+    private void showShareDialog(final Todolist list, final Context context, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(R.string.shareMessage);
         // Create Edittext to enter username
@@ -152,8 +165,12 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                             call.enqueue(new Callback<ReturnMessage>() {
                                 @Override
                                 public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
-                                    ReturnMessage returnMessage = response.body();
-                                    Toast.makeText(context, returnMessage.getMessage(), Toast.LENGTH_LONG).show();
+                                    if (response.isSuccessful()) {
+                                        todoData.get(position).setShared("1");
+                                        notifyItemChanged(position);
+                                        ReturnMessage returnMessage = response.body();
+                                        Toast.makeText(context, returnMessage.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
 
                                 }
                                 @Override
@@ -174,7 +191,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
         builder.setMessage(R.string.renameMessage);
         // Create Edittext to enter username
         final EditText enterNewName = new EditText(context);
-        enterNewName.setHint(R.string.renameDialogHint);
+        enterNewName.setHint(R.string.renameListHint);
 
         builder.setView(enterNewName);
         // Onlick listener is overriden later for error handling
@@ -200,7 +217,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                         UserService userService = ApiUtils.getUserService();
 
                         if (enterNewName.getText().toString().isEmpty()) {
-                            enterNewName.setError(context.getString(R.string.shareDialogUsernameRequired));
+                            enterNewName.setError(context.getString(R.string.renameListRequired));
                         } else {
                             list.setList_name(enterNewName.getText().toString());
                             Call<ReturnMessage> call = userService.updateTodolist(token, list);
@@ -209,7 +226,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                                 public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
                                     ReturnMessage returnMessage = response.body();
                                     Toast.makeText(context, returnMessage.getMessage(), Toast.LENGTH_LONG).show();
-                                    TodolistAdapter.this.notifyItemChanged(position);
+                                    notifyItemChanged(position);
 
                                 }
                                 @Override
@@ -253,7 +270,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                             Log.i("Operation: ", returnMessage.getMessage());
                             // notify adapter for deletion
                             todoData.remove(position);
-                            TodolistAdapter.this.notifyItemRemoved(position);
+                            notifyItemRemoved(position);
                         } else {
                             Log.e("Operation failed: ", response.errorBody().toString());
                         }

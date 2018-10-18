@@ -1,5 +1,6 @@
 package de.rememberly.rememberlyandroidapp.activities;
 
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -36,10 +38,18 @@ public class NoticesOverviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_overview);
+        // set background animation:
+        LinearLayout linearLayout = findViewById(R.id.AnimationRootLayout);
+        AnimationDrawable animationDrawable = (AnimationDrawable) linearLayout.getBackground();
+        animationDrawable.setEnterFadeDuration(2000);
+        animationDrawable.setExitFadeDuration(4000);
+        animationDrawable.start();
+
 
         listRecyclerView = findViewById(R.id.listRecyclerView);
         listManager = new LinearLayoutManager(this);
-        listAddEdittext = findViewById(R.id.edittodo);
+        listAddEdittext = findViewById(R.id.newListItemInput);
+        listAddEdittext.setHint(getResources().getString(R.string.inputNewNoticeName));
         listRecyclerView.setLayoutManager(listManager);
         addButton = findViewById(R.id.imageButton);
         userService = ApiUtils.getUserService();
@@ -66,7 +76,7 @@ public class NoticesOverviewActivity extends AppCompatActivity {
                                 getAndStoreNewToken();
 
                             } else {
-                                Log.e("Error: ",response.body().toString());
+                                Log.e("Error: ", "Code " + response.code());
                             }
                         }
 
@@ -92,7 +102,7 @@ public class NoticesOverviewActivity extends AppCompatActivity {
                         noticesOverviewAdapter.notifyItemInserted(noticeData.size() - 1);
                     }
                 } else {
-                    Log.e("Error: ",response.body().toString());
+                    Log.e("Error: ", "No notices found");
                 }
             }
 

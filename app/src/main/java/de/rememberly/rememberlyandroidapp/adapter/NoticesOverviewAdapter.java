@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,10 +39,12 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
 
         public TextView noticeView;
         public TextView noticeViewOptions;
+        private ImageView shareIcon;
         public NoticeViewHolder(View view) {
             super(view);
             noticeView = view.findViewById(R.id.textView);
             noticeViewOptions = view.findViewById(R.id.textViewOptions);
+            shareIcon = view.findViewById(R.id.shareIcon);
         }
     }
     public NoticesOverviewAdapter(ArrayList<Notice> dataset) {
@@ -51,7 +54,7 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
     public NoticeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.todolist_text_view, parent, false);
+                .inflate(R.layout.listitem_view, parent, false);
 
         NoticeViewHolder vh = new NoticeViewHolder(v);
         return vh;
@@ -64,7 +67,12 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
         // - replace the contents of the view with that element
         initNoticeView(holder, position);
         initOptionsMenu(holder, position);
-
+        initShareIcon(holder, position);
+    }
+    private void initShareIcon(final NoticeViewHolder holder, final int position) {
+        if (!noticeData.get(position).isShared()) {
+            holder.shareIcon.setVisibility(View.GONE);
+        }
     }
     private void initNoticeView(final NoticeViewHolder holder, final int position) {
         holder.noticeView.setText(noticeData.get(position).getNoticeName());
@@ -97,7 +105,7 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
                                 showRenameDialog(notice, context, position);
                                 break;
                             case R.id.optionsshare:
-                                showShareDialog(notice, context);
+                                showShareDialog(notice, context, position);
                                 break;
                         }
                         return false;
@@ -114,9 +122,9 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
      @param context The context (activity) used for the dialog
 
      **/
-    private void showShareDialog(final Notice notice, final Context context) {
+    private void showShareDialog(final Notice notice, final Context context, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(R.string.shareMessage);
+        builder.setMessage(R.string.shareNoticeMessage);
         // Create Edittext to enter username
         final EditText enterUsername = new EditText(context);
         enterUsername.setHint(R.string.shareDialogHint);
@@ -152,9 +160,12 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
                             call.enqueue(new Callback<ReturnMessage>() {
                                 @Override
                                 public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
-                                    ReturnMessage returnMessage = response.body();
-                                    Toast.makeText(context, returnMessage.getMessage(), Toast.LENGTH_LONG).show();
-
+                                    if (response.isSuccessful()) {
+                                        noticeData.get(position).setIsShared("1");
+                                        NoticesOverviewAdapter.this.notifyItemChanged(position);
+                                        ReturnMessage returnMessage = response.body();
+                                        Toast.makeText(context, returnMessage.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
                                 }
                                 @Override
                                 public void onFailure(Call<ReturnMessage> call, Throwable t) {
@@ -171,10 +182,10 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
     }
     private void showRenameDialog(final Notice notice, final Context context, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(R.string.renameMessage);
+        builder.setMessage(R.string.renameNoticeMessage);
         // Create Edittext to enter username
         final EditText enterNewName = new EditText(context);
-        enterNewName.setHint(R.string.renameDialogHint);
+        enterNewName.setHint(R.string.renameNoticeHint);
 
         builder.setView(enterNewName);
         // Onlick listener is overriden later for error handling
@@ -200,16 +211,18 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
                         UserService userService = ApiUtils.getUserService();
 
                         if (enterNewName.getText().toString().isEmpty()) {
-                            enterNewName.setError(context.getString(R.string.shareDialogUsernameRequired));
+                            enterNewName.setError(context.getString(R.string.renameNoticeRequired));
                         } else {
                             notice.setNoticeName(enterNewName.getText().toString());
                             Call<ReturnMessage> call = userService.updateNotice(token, notice);
                             call.enqueue(new Callback<ReturnMessage>() {
                                 @Override
                                 public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
-                                    ReturnMessage returnMessage = response.body();
-                                    Toast.makeText(context, returnMessage.getMessage(), Toast.LENGTH_LONG).show();
-                                    NoticesOverviewAdapter.this.notifyItemChanged(position);
+                                    if (response.isSuccessful()) {
+                                        ReturnMessage returnMessage = response.body();
+                                        Toast.makeText(context, returnMessage.getMessage(), Toast.LENGTH_LONG).show();
+                                        NoticesOverviewAdapter.this.notifyItemChanged(position);
+                                    }
 
                                 }
                                 @Override
