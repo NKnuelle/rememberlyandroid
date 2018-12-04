@@ -24,6 +24,7 @@ import java.util.ArrayList;
 
 import de.rememberly.rememberlyandroidapp.R;
 import de.rememberly.rememberlyandroidapp.activities.TodoActivity;
+import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
 import de.rememberly.rememberlyandroidapp.model.ReturnMessage;
 import de.rememberly.rememberlyandroidapp.model.Todolist;
 import de.rememberly.rememberlyandroidapp.remote.ApiUtils;
@@ -154,7 +155,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String token = "Bearer " + ApiUtils.getUserToken(context);
+                        String token = "Bearer " + PreferencesManager.getUserToken(context);
                         UserService userService = ApiUtils.getUserService();
 
                         if (enterUsername.getText().toString().isEmpty()) {
@@ -213,7 +214,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String token = "Bearer " + ApiUtils.getUserToken(context);
+                        String token = "Bearer " + PreferencesManager.getUserToken(context);
                         UserService userService = ApiUtils.getUserService();
 
                         if (enterNewName.getText().toString().isEmpty()) {
@@ -257,7 +258,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
         builder.setMessage(R.string.deleteMessage);
         builder.setPositiveButton(R.string.deleteButton, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                String token = "Bearer " + ApiUtils.getUserToken(context);
+                String token = "Bearer " + PreferencesManager.getUserToken(context);
                 UserService userService = ApiUtils.getUserService();
 
                 Call<ReturnMessage> call = userService.deleteTodolist(token, list.getList_id());

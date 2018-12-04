@@ -18,6 +18,7 @@ import java.util.List;
 
 import de.rememberly.rememberlyandroidapp.R;
 import de.rememberly.rememberlyandroidapp.adapter.TodolistAdapter;
+import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
 import de.rememberly.rememberlyandroidapp.model.Todolist;
 import de.rememberly.rememberlyandroidapp.model.Token;
 import de.rememberly.rememberlyandroidapp.remote.ApiUtils;
@@ -67,7 +68,7 @@ public class TodolistActivity extends AppCompatActivity {
                 String newTodolistText = todoEdit.getText().toString();
                 if (!newTodolistText.isEmpty()) {
                     Todolist newTodolist = new Todolist(newTodolistText);
-                    Call<Todolist> call = userService.newTodolist("Bearer " + ApiUtils.getUserToken(TodolistActivity.this), newTodolist);
+                    Call<Todolist> call = userService.newTodolist("Bearer " + PreferencesManager.getUserToken(TodolistActivity.this), newTodolist);
                     call.enqueue(new Callback<Todolist>() {
                         @Override
                         public void onResponse(Call<Todolist> call, Response<Todolist> response) {
@@ -92,12 +93,12 @@ public class TodolistActivity extends AppCompatActivity {
         });
     }
     private void initTodolists() {
-        String token = ApiUtils.getUserToken(this);
+        String token = PreferencesManager.getUserToken(this);
         Call<List<Todolist>> call = userService.getTodolist("Bearer " + token);
         call.enqueue(new Callback<List<Todolist>>() {
             @Override
             public void onResponse(Call<List<Todolist>> call, Response<List<Todolist>> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && !response.body().isEmpty()) {
                     ArrayList<Todolist> todolistArray = (ArrayList<Todolist>) response.body();
                     for (Todolist todolist : todolistArray) {
                         todoData.add(todolist);
@@ -136,13 +137,13 @@ public class TodolistActivity extends AppCompatActivity {
                 android.R.color.holo_red_light);
     }
     private void getAndStoreNewToken() {
-        Call<Token> call = userService.newToken("Bearer " + ApiUtils.getUserToken(this));
+        Call<Token> call = userService.newToken("Bearer " + PreferencesManager.getUserToken(this));
         call.enqueue(new Callback<Token>() {
             @Override
             public void onResponse(Call<Token> call, Response<Token> response) {
                 if (response.isSuccessful()) {
                     Token newToken = (Token) response.body();
-                    ApiUtils.storeUserToken(newToken.getToken(), TodolistActivity.this);
+                    PreferencesManager.storeUserToken(newToken.getToken(), TodolistActivity.this);
                 } else {
                     Log.e("Errorcode: ",response.message());
                 }

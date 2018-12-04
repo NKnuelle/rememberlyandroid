@@ -23,11 +23,12 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 
 import de.rememberly.rememberlyandroidapp.R;
-import de.rememberly.rememberlyandroidapp.activities.NoticeActivity;
+import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
 import de.rememberly.rememberlyandroidapp.model.Notice;
 import de.rememberly.rememberlyandroidapp.model.ReturnMessage;
 import de.rememberly.rememberlyandroidapp.remote.ApiUtils;
 import de.rememberly.rememberlyandroidapp.service.UserService;
+import de.rememberly.rememberlyandroidapp.activities.EditorActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -80,7 +81,7 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
             @Override
             public void onClick(View v) {
                 String noticeID = noticeData.get(position).getNoticeID();
-                Intent intent = new Intent(holder.noticeView.getContext(), NoticeActivity.class);
+                Intent intent = new Intent(holder.noticeView.getContext(), EditorActivity.class);
                 intent.putExtra("noticeID", noticeID);
                 holder.noticeView.getContext().startActivity(intent);
             }
@@ -149,7 +150,7 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String token = "Bearer " + ApiUtils.getUserToken(context);
+                        String token = "Bearer " + PreferencesManager.getUserToken(context);
                         UserService userService = ApiUtils.getUserService();
 
                         if (enterUsername.getText().toString().isEmpty()) {
@@ -207,7 +208,7 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String token = "Bearer " + ApiUtils.getUserToken(context);
+                        String token = "Bearer " + PreferencesManager.getUserToken(context);
                         UserService userService = ApiUtils.getUserService();
 
                         if (enterNewName.getText().toString().isEmpty()) {
@@ -253,7 +254,7 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
         builder.setMessage(R.string.deleteMessage);
         builder.setPositiveButton(R.string.deleteButton, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                String token = "Bearer " + ApiUtils.getUserToken(context);
+                String token = "Bearer " + PreferencesManager.getUserToken(context);
                 UserService userService = ApiUtils.getUserService();
 
                 Call<ReturnMessage> call = userService.deleteNotice(token, notice.getNoticeID());

@@ -1,0 +1,123 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+<com.github.irshulx.Editor android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/editor"
+    app:render_type="Editor"
+    app:placeholder="Start writing here..."
+    android:paddingTop="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:layout_height="wrap_content"
+    android:paddingBottom="100dp"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/action_h1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="H1" />
+
+            <Button
+                android:id="@+id/action_h2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="H2" />
+
+            <Button
+                android:id="@+id/action_h3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="H3" />
+
+            <Button
+                android:id="@+id/action_bold"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="B" />
+
+            <Button
+                android:id="@+id/action_Italic"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="I" />
+
+            <Button
+                android:id="@+id/action_indent"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="i" />
+
+            <Button
+                android:id="@+id/action_outdent"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="o" />
+
+            <Button
+                android:id="@+id/action_bulleted"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="*" />
+
+            <Button
+                android:id="@+id/action_color"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="#" />
+
+            <Button
+                android:id="@+id/action_unordered_numbered"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="1." />
+
+            <Button
+                android:id="@+id/action_hr"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="hr" />
+
+            <Button
+                android:id="@+id/action_insert_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="img" />
+
+            <Button
+                android:id="@+id/action_insert_link"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="a" />
+
+            <Button
+                android:id="@+id/action_map"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="M" />
+
+            <Button
+                android:id="@+id/action_erase"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="del" />
+        </LinearLayout>
+    </HorizontalScrollView>
+    <Button
+        android:id="@+id/btnRender"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:text="render"/>
+</LinearLayout>

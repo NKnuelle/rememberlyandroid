@@ -3,9 +3,13 @@ package de.rememberly.rememberlyandroidapp;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import de.rememberly.rememberlyandroidapp.apputils.CryptoManager;
+import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
 
 import static org.junit.Assert.*;
 
@@ -22,5 +26,12 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("de.rememberly.rememberlyandroidapp", appContext.getPackageName());
+    }
+    @Test
+    public void testUserCredentialEncryption() {
+        Context appContext = InstrumentationRegistry.getTargetContext();
+        String username = PreferencesManager.getUsername( appContext);
+        String password = PreferencesManager.getUserPassword(appContext);
+        Log.i("Decrypted Credentials: ", username + " " + password);
     }
 }

@@ -4,16 +4,20 @@ import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -22,6 +26,7 @@ import java.util.List;
 import de.rememberly.rememberlyandroidapp.R;
 import de.rememberly.rememberlyandroidapp.adapter.DoneTodoAdapter;
 import de.rememberly.rememberlyandroidapp.adapter.TodoAdapter;
+import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
 import de.rememberly.rememberlyandroidapp.model.ReturnMessage;
 import de.rememberly.rememberlyandroidapp.model.Todo;
 import de.rememberly.rememberlyandroidapp.remote.ApiUtils;
@@ -53,7 +58,7 @@ public class TodoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_todo);
 
         // set background animation:
-        ScrollView scrollView = findViewById(R.id.AnimationRootLayout);
+        NestedScrollView scrollView = findViewById(R.id.AnimationRootLayout);
         AnimationDrawable animationDrawable = (AnimationDrawable) scrollView.getBackground();
         animationDrawable.setEnterFadeDuration(2000);
         animationDrawable.setExitFadeDuration(4000);
@@ -79,6 +84,7 @@ public class TodoActivity extends AppCompatActivity {
         initTodos();
         initImagebutton();
         initDoneButton();
+        initEditDoneButton();
     }
     public void onPause() {
         super.onPause();
@@ -87,29 +93,19 @@ public class TodoActivity extends AppCompatActivity {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String newTodoText = todoEdit.getText().toString();
-                if (!newTodoText.isEmpty()) {
-                    Todo newTodo = new Todo(listID, null, null,
-                            newTodoText, null, "0");
-                    Call<Todo> call = userService.newTodo("Bearer " + ApiUtils.getUserToken(TodoActivity.this), newTodo);
-                    call.enqueue(new Callback<Todo>() {
-                        @Override
-                        public void onResponse(Call<Todo> call, Response<Todo> response) {
-                            if (response.isSuccessful()) {
-                                Todo responseTodo = response.body();
-                                todoData.add(responseTodo);
-                                todoAdapter.notifyItemInserted(todoData.size() - 1);
-                            } else {
-                                Log.e("Error: ",response.body().toString());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<Todo> call, Throwable t) {
-                            Toast.makeText(TodoActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                addTodo();
+            }
+        });
+    }
+    private void initEditDoneButton() {
+        todoEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    addTodo();
+                    return true;
                 }
+                return false;
             }
         });
     }
@@ -131,9 +127,6 @@ public class TodoActivity extends AppCompatActivity {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
                 todoData.clear();
                 doneTodoData.clear();
                 todoAdapter.notifyDataSetChanged();
@@ -151,13 +144,17 @@ public class TodoActivity extends AppCompatActivity {
         todoData.remove(position);
         todoAdapter.notifyItemRemoved(position);
         todo.setIs_checked("1");
-        doneTodoData.add(todo);
+        doneTodoData.add(0, todo);
         if (doneTodoData.size() > 0) {
             doneTodoButton.setVisibility(View.VISIBLE);
         }
-        doneTodoAdapter.notifyItemInserted(doneTodoData.size() - 1);
+        doneTodoAdapter.notifyItemInserted(0);
+        if (doneTodoData.size() >= 16) {
+            doneTodoData.remove(15);
+            doneTodoAdapter.notifyItemRemoved(15);
+        }
 
-        String token = "Bearer " + ApiUtils.getUserToken(this);
+        String token = "Bearer " + PreferencesManager.getUserToken(this);
 
         Call<ReturnMessage> call = userService.updateTodo(token, todo);
         call.enqueue(new Callback<ReturnMessage>() {
@@ -184,10 +181,10 @@ public class TodoActivity extends AppCompatActivity {
             doneTodoButton.setVisibility(View.GONE);
         }
         todo.setIs_checked("0");
-        todoData.add(todo);
-        todoAdapter.notifyItemInserted(todoData.size() - 1);
+        todoData.add(0, todo);
+        todoAdapter.notifyItemInserted(0);
 
-        String token = "Bearer " + ApiUtils.getUserToken(this);
+        String token = "Bearer " + PreferencesManager.getUserToken(this);
 
         Call<ReturnMessage> call = userService.updateTodo(token, todo);
         call.enqueue(new Callback<ReturnMessage>() {
@@ -209,23 +206,23 @@ public class TodoActivity extends AppCompatActivity {
         });
     }
     private void initTodos() {
-        String token = ApiUtils.getUserToken(this);
+        String token = PreferencesManager.getUserToken(this);
         Intent intent = getIntent();
         listID = intent.getStringExtra("list_id");
         Call<List<Todo>> call = userService.getTodos("Bearer " + token, listID);
         call.enqueue(new Callback<List<Todo>>() {
             @Override
             public void onResponse(Call<List<Todo>> call, Response<List<Todo>> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && !response.body().isEmpty()) {
                     ArrayList<Todo> todolistArray = (ArrayList<Todo>) response.body();
                     // Add Names from API
                     for (Todo todo : todolistArray) {
                         if (todo.getIs_checked().equals("0")) {
-                            todoData.add(todo);
-                            todoAdapter.notifyItemInserted(todoData.size() - 1);
+                            todoData.add(0, todo);
+                            todoAdapter.notifyItemInserted(0);
                         } else {
-                            doneTodoData.add(todo);
-                            doneTodoAdapter.notifyItemInserted(todoData.size() - 1);
+                            doneTodoData.add(0, todo);
+                            doneTodoAdapter.notifyItemInserted(0);
                         }
 
                     }
@@ -244,5 +241,31 @@ public class TodoActivity extends AppCompatActivity {
                 Toast.makeText(TodoActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    private void addTodo() {
+        String newTodoText = todoEdit.getText().toString();
+        if (!newTodoText.isEmpty()) {
+            Todo newTodo = new Todo(listID, null, null,
+                    newTodoText, null, "0");
+            Call<Todo> call = userService.newTodo("Bearer " + PreferencesManager.getUserToken(TodoActivity.this), newTodo);
+            call.enqueue(new Callback<Todo>() {
+                @Override
+                public void onResponse(Call<Todo> call, Response<Todo> response) {
+                    if (response.isSuccessful()) {
+                        Todo responseTodo = response.body();
+                        todoData.add(0, responseTodo);
+                        todoAdapter.notifyItemInserted(0);
+                        todoEdit.setText("");
+                    } else {
+                        Log.e("Error: ",response.body().toString());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Todo> call, Throwable t) {
+                    Toast.makeText(TodoActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }

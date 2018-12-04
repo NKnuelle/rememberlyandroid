@@ -1,0 +1,56 @@
+-- Merging decision tree log ---
+manifest
+ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:2:1-15:12
+INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:2:1-15:12
+INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:2:1-15:12
+MERGED from [:android] G:\Repositorys\rememberlyandroidapp\android\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:2:1-11:12
+INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:2:1-15:12
+INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:2:1-15:12
+	package
+		ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:2:11-57
+	android:versionName
+		INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+		ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:2:1-15:12
+		INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+		ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:2:1-15:12
+		INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:3:11-69
+application
+ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:5:5-13:19
+	android:label
+		ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:6:18-48
+	android:theme
+		ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:5:18-60
+activity#org.kobjects.nativehtml.demo.android.MainActivity
+ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:7:9-12:20
+	android:name
+		ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:7:19-83
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:8:13-11:29
+action#android.intent.action.MAIN
+ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:9:17-68
+	android:name
+		ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:9:25-66
+category#android.intent.category.LAUNCHER
+ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:10:17-76
+	android:name
+		ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml:10:27-74
+uses-sdk
+INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+MERGED from [:android] G:\Repositorys\rememberlyandroidapp\android\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:7:5-9:41
+MERGED from [:android] G:\Repositorys\rememberlyandroidapp\android\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:7:5-9:41
+INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+		ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+		INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+		ADDED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
+		INJECTED from G:\Repositorys\rememberlyandroidapp\demo-android\src\main\AndroidManifest.xml
