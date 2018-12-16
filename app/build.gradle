@@ -41,6 +41,6 @@ dependencies {
     implementation 'ru.noties:markwon-image-loader:2.0.0'
     implementation 'ru.noties:markwon-syntax-highlight:2.0.0'
     implementation 'ru.noties:markwon-view:2.0.0'
-    implementation 'com.github.stefanhaustein.nativehtml:android:v1.0.2'
+    implementation 'com.github.stefanhaustein.nativehtml:android:v1.0.4'
 }
 apply plugin: 'com.google.gms.google-services'

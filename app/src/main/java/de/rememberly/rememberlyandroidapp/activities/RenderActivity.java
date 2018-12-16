@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.webkit.WebView;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -37,25 +38,33 @@ public class RenderActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.renderlayout);
+        WebView webView = findViewById(R.id.webview);
 
-        setContentView(R.layout.todolist_layout);
 
-        ScrollView scrollView = findViewById(R.id.AnimationRootLayout);
-
-        LinearLayout linearLayoutUndone = findViewById(R.id.checkedtodolayout);
-        htmlViewUndone = new HtmlView(this);
-        linearLayoutUndone.addView(htmlViewUndone, 0);
-
-        AnimationDrawable animationDrawable = (AnimationDrawable) scrollView.getBackground();
-        animationDrawable.setEnterFadeDuration(2000);
-        animationDrawable.setExitFadeDuration(4000);
-        animationDrawable.start();
+//        setContentView(R.layout.todolist_layout);
+//
+//        ScrollView scrollView = findViewById(R.id.AnimationRootLayout);
+//
+//        LinearLayout linearLayoutUndone = findViewById(R.id.checkedtodolayout);
+//        htmlViewUndone = new HtmlView(this);
+//        linearLayoutUndone.addView(htmlViewUndone, 0);
+//
+//        AnimationDrawable animationDrawable = (AnimationDrawable) scrollView.getBackground();
+//        animationDrawable.setEnterFadeDuration(2000);
+//        animationDrawable.setExitFadeDuration(4000);
+//        animationDrawable.start();
 
 //        Intent intent = this.getIntent();
 //        String html = intent.getStringExtra("content");
         String html = "<input type=\"checkbox\">test text" + "<br>"
+                + "<input type=\"radio\" checked=\"checked\">test text" + "<br>"
+                + "<input type=\"file\" >test text" + "<br>"
+                + "<input type=\"range\" >test text" + "<br>"
+                + "<input type=\"time\" >test text" + "<br>"
                 + "<table><tr><th>firstname</th></tr><tr><td>Jill</td></tr></table>";
         String filename = "test.html";
+        webView.loadData(html, "text/html", "utf-8");
         FileOutputStream outputStream;
 
         try {
@@ -68,12 +77,20 @@ public class RenderActivity extends AppCompatActivity{
             String prefix = indexUrl.toString();
             int cut = prefix.lastIndexOf('/');
             prefix = prefix.substring(0, cut + 1);
-            htmlViewUndone.addInternalLinkPrefix(prefix);
+            // htmlViewUndone.addInternalLinkPrefix(prefix);
+            /*
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
-            htmlViewUndone.loadHtml(indexUrl);
+            StrictMode.setThreadPolicy(policy);
+
+            htmlViewUndone.loadHtml(URI.create("https://typo3.nils-kretschmer.de"));
+            */
+            // htmlViewUndone.loadHtml(indexUrl);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+        /*
         AndroidContainerElement container  =  (AndroidContainerElement) htmlViewUndone.getChildAt(0);
         HtmlCollection htmlCollection = container.getChildren();
         Log.i("Collection length: ", String.valueOf(htmlCollection.getLength()));
@@ -82,6 +99,7 @@ public class RenderActivity extends AppCompatActivity{
         CheckBox checkBox = ((CheckBox) androidInputElement.getChildAt(0));
         checkBox.setBackground(checkBoxBackground);
         Log.i("Class 1: " , htmlCollection.item(0).getClass().toString());
+        */
 
     }
 }
@@ -90,6 +108,4 @@ public class RenderActivity extends AppCompatActivity{
 
 
 
-//        setContentView(R.layout.renderlayout);
-//        WebView webView = findViewById(R.id.webview);
-//        webView.loadData(html, "text/html", "utf-8");
+
