@@ -33,7 +33,6 @@ public class CryptoManager {
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
     private static final String TRANSFORMATION = "AES/GCM/NoPadding";
 
-    @TargetApi(23)
     private static SecretKey generateKey(String alias) throws NoSuchAlgorithmException, NoSuchProviderException,
             InvalidAlgorithmParameterException, NoSuchPaddingException, InvalidKeyException {
 
