@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import de.rememberly.rememberlyandroidapp.R;
 import de.rememberly.rememberlyandroidapp.activities.TodoActivity;
 import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
-import de.rememberly.rememberlyandroidapp.model.ReturnMessage;
+import de.rememberly.rememberlyandroidapp.model.HttpResponse;
 import de.rememberly.rememberlyandroidapp.model.Todolist;
 import de.rememberly.rememberlyandroidapp.remote.ApiUtils;
 import de.rememberly.rememberlyandroidapp.service.UserService;
@@ -162,20 +162,20 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                             enterUsername.setError(context.getString(R.string.shareDialogUsernameRequired));
                         } else {
                             JsonObject sharedJSON = createShareJson(enterUsername.getText().toString(), list.getList_id());
-                            Call<ReturnMessage> call = userService.shareTodolist(token, sharedJSON);
-                            call.enqueue(new Callback<ReturnMessage>() {
+                            Call<HttpResponse> call = userService.shareTodolist(token, sharedJSON);
+                            call.enqueue(new Callback<HttpResponse>() {
                                 @Override
-                                public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
+                                public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {
                                     if (response.isSuccessful()) {
                                         todoData.get(position).setShared("1");
                                         notifyItemChanged(position);
-                                        ReturnMessage returnMessage = response.body();
-                                        Toast.makeText(context, returnMessage.getMessage(), Toast.LENGTH_LONG).show();
+                                        HttpResponse httpResponse = response.body();
+                                        Toast.makeText(context, httpResponse.getMessage(), Toast.LENGTH_LONG).show();
                                     }
 
                                 }
                                 @Override
-                                public void onFailure(Call<ReturnMessage> call, Throwable t) {
+                                public void onFailure(Call<HttpResponse> call, Throwable t) {
                                     Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
@@ -221,17 +221,17 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                             enterNewName.setError(context.getString(R.string.renameListRequired));
                         } else {
                             list.setList_name(enterNewName.getText().toString());
-                            Call<ReturnMessage> call = userService.updateTodolist(token, list);
-                            call.enqueue(new Callback<ReturnMessage>() {
+                            Call<HttpResponse> call = userService.updateTodolist(token, list);
+                            call.enqueue(new Callback<HttpResponse>() {
                                 @Override
-                                public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
-                                    ReturnMessage returnMessage = response.body();
-                                    Toast.makeText(context, returnMessage.getMessage(), Toast.LENGTH_LONG).show();
+                                public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {
+                                    HttpResponse httpResponse = response.body();
+                                    Toast.makeText(context, httpResponse.getMessage(), Toast.LENGTH_LONG).show();
                                     notifyItemChanged(position);
 
                                 }
                                 @Override
-                                public void onFailure(Call<ReturnMessage> call, Throwable t) {
+                                public void onFailure(Call<HttpResponse> call, Throwable t) {
                                     Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
@@ -261,14 +261,14 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                 String token = "Bearer " + PreferencesManager.getUserToken(context);
                 UserService userService = ApiUtils.getUserService();
 
-                Call<ReturnMessage> call = userService.deleteTodolist(token, list.getList_id());
+                Call<HttpResponse> call = userService.deleteTodolist(token, list.getList_id());
                 Log.i("List ID: ", list.getList_id());
-                call.enqueue(new Callback<ReturnMessage>() {
+                call.enqueue(new Callback<HttpResponse>() {
                     @Override
-                    public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
+                    public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {
                         if (response.isSuccessful()) {
-                            ReturnMessage returnMessage = response.body();
-                            Log.i("Operation: ", returnMessage.getMessage());
+                            HttpResponse httpResponse = response.body();
+                            Log.i("Operation: ", httpResponse.getMessage());
                             // notify adapter for deletion
                             todoData.remove(position);
                             notifyItemRemoved(position);
@@ -279,7 +279,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
 
 
                     @Override
-                    public void onFailure(Call<ReturnMessage> call, Throwable t) {
+                    public void onFailure(Call<HttpResponse> call, Throwable t) {
                         Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });

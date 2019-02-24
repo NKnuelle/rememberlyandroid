@@ -1,12 +1,19 @@
 package de.rememberly.rememberlyandroidapp.model;
 
-public class Notice {
-    public Notice(String createdAt, String noticeName, String noticeID, String owner, String isShared) {
+
+/**
+ * Class Notice is a Http response model. A notice is sent by the rememberly server in JSON format.
+ * All attributes are related to the JSON response.
+ */
+public class Notice extends HttpResponse {
+    public Notice(String createdAt, String noticeName, String noticeID, String owner, String isShared, String noticeContent, String message) {
+        super(message);
         this.createdAt = createdAt;
         this.noticeName = noticeName;
         this.noticeID = noticeID;
         this.owner = owner;
         this.isShared = isShared;
+        this.noticeContent = noticeContent;
     }
 
     public Notice(String noticeName) {
@@ -46,6 +53,16 @@ public class Notice {
     }
 
     private String createdAt;
+
+    public String getNoticeContent() {
+        return noticeContent;
+    }
+
+    public void setNoticeContent(String noticeContent) {
+        this.noticeContent = noticeContent;
+    }
+
+    private String noticeContent;
     private String noticeName;
     private String noticeID;
     private String owner;

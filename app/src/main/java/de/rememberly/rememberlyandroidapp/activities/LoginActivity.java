@@ -1,5 +1,6 @@
 package de.rememberly.rememberlyandroidapp.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.drawable.AnimationDrawable;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -19,7 +21,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import de.rememberly.rememberlyandroidapp.R;
 import de.rememberly.rememberlyandroidapp.apputils.CryptoManager;
 import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
-import de.rememberly.rememberlyandroidapp.model.ReturnMessage;
+import de.rememberly.rememberlyandroidapp.model.HttpResponse;
 import de.rememberly.rememberlyandroidapp.model.Token;
 import de.rememberly.rememberlyandroidapp.remote.ApiUtils;
 import de.rememberly.rememberlyandroidapp.service.UserService;
@@ -33,50 +35,26 @@ public class LoginActivity extends AppCompatActivity {
     EditText passwordField;
     Button loginButton;
     UserService userService;
-//    CredentialsClient googleCredentialsClient;
-//    CredentialRequest googleCredentialRequest;
-//    final int RC_READ = 100;
-//    final int RC_SAVE = 200;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userService = ApiUtils.getUserService();
+        progressBar = findViewById(R.id.loginbar);
+        progressBar.setVisibility(View.INVISIBLE);
 
-        // Try to login or build activity
-        login();
-    }
-    private void login() {
-        String userToken = PreferencesManager.getUserToken(this);
-        if (!TextUtils.isEmpty(userToken)) {
-            tokenLogin(userToken);
-            Log.i("Usertoken is: ", userToken);
-        }
-        if (!TextUtils.isEmpty(PreferencesManager.getUserPassword(this))
-                && !TextUtils.isEmpty(PreferencesManager.getUsername(this))) {
-            doLogin(PreferencesManager.getUsername(this), PreferencesManager.getUserPassword(this));
-        }
+        // init and build the activity
         buildActivity();
+        init();
+
     }
-    private void tokenLogin(String userToken) {
-        Call<ReturnMessage> call = userService.tokenLogin("Bearer " + userToken);
-        call.enqueue(new Callback<ReturnMessage>() {
-            @Override
-            public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
-                if (response.isSuccessful()) {
-                    ReturnMessage returnMessage = response.body();
-                    Intent intent = new Intent(LoginActivity.this, MainMenu.class);
-                    startActivity(intent);
-                    LoginActivity.this.finish();
-                } else {
-                    Log.e("Token login: ", "Failed");
-                }
-            }
-            @Override
-            public void onFailure(Call<ReturnMessage> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void init() {
+
+        String userToken = PreferencesManager.getUserToken(this);
+        String userpassword = PreferencesManager.getUserPassword(this);
+        String username = PreferencesManager.getUsername(this);
+        autoLogin(userToken, username, userpassword);
     }
     private void buildActivity() {
         // Build Login Activity
@@ -105,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                 // validate form
                 if (validateLogin(username, password)) {
                     // do login
-                    doLogin(username, password);
+                    userLogin(username, password);
                 }
             }
         });
@@ -122,7 +100,13 @@ public class LoginActivity extends AppCompatActivity {
         }
         return true;
     }
-    private void doLogin(final String username, final String password) {
+    private void storeCredentials(String username, String password) {
+        PreferencesManager.storeUsername(username, this);
+        PreferencesManager.storeUserPassword(password, this);
+        Log.i("Credentials stored: ", username + " " + password);
+    }
+    private void userLogin(final String username, final String password) {
+        progressBar.setVisibility(View.VISIBLE);
         final String credentials = ApiUtils.getCredentialString(username, password);
         Call<Token> call = userService.login(credentials);
         call.enqueue(new Callback<Token>() {
@@ -132,24 +116,47 @@ public class LoginActivity extends AppCompatActivity {
                     Token userToken = response.body();
                     PreferencesManager.storeUserToken(userToken.getToken(), LoginActivity.this);
                     storeCredentials(username, password);
-                    Intent intent = new Intent(LoginActivity.this, MainMenu.class);
-                    startActivity(intent);
-                    LoginActivity.this.finish();
+                    startMenuActivity();
                 } else {
                     Toast.makeText(LoginActivity.this, "Username or password incorrect",
                             Toast.LENGTH_LONG).show();
+                    progressBar.setVisibility(View.INVISIBLE);
+                    loginButton.setEnabled(true);
                 }
             }
 
             @Override
             public void onFailure(Call<Token> call, Throwable t) {
                 Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                loginButton.setEnabled(true);
             }
         });
     }
-    private void storeCredentials(String username, String password) {
-        PreferencesManager.storeUsername(username, this);
-        PreferencesManager.storeUserPassword(password, this);
-        Log.i("Credentials stored: ", username + " " + password);
+    private void autoLogin(final String userToken, final String username, final String password) {
+        // deactivate loginbutton - gets activated if login fails
+        loginButton.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
+        Call<HttpResponse> call = userService.tokenLogin("Bearer " + userToken);
+        call.enqueue(new Callback<HttpResponse>() {
+            @Override
+            public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {
+                if (response.isSuccessful()) {
+                    startMenuActivity();
+                } else {
+                    Log.e("Token login: ", "Failed");
+                    // try login with username + password
+                    userLogin(username, password);
+                }
+            }
+            @Override
+            public void onFailure(Call<HttpResponse> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void startMenuActivity() {
+        Intent intent = new Intent(LoginActivity.this, MainMenu.class);
+        startActivity(intent);
+        LoginActivity.this.finish();
     }
 }

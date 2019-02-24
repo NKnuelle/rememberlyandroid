@@ -1,6 +1,6 @@
 package de.rememberly.rememberlyandroidapp.model;
 
-public class Todo {
+public class Todo extends HttpResponse{
     public String getList_id() {
         return list_id;
     }

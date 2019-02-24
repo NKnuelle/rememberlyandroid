@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@drawable/android_gradient_list"
+    android:id="@+id/AnimationRootLayout">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+
+        <include
+            layout="@layout/toolbar_editor"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary" />
+
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_height="match_parent">
+
+
+        <!-- Begin Editor toolbar -->
+
+        <HorizontalScrollView android:id="@+id/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_alignParentBottom="true"
+            android:scrollbars="none">
+
+            <include layout="@layout/editor_buttonbar" />
+
+
+        </HorizontalScrollView>
+        <!--End of Editor toolbar -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:scrollbars="vertical"
+            android:layout_alignParentTop="true"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="50dp"
+            >
+            <com.github.irshulx.Editor
+                android:layout_width="match_parent"
+                android:id="@+id/editor"
+                app:render_type="Editor"
+                app:placeholder="Start writing here..."
+                android:layout_height="wrap_content"
+                android:background="@drawable/dialogrounded"
+                android:backgroundTint="@color/white">
+            </com.github.irshulx.Editor>
+        </ScrollView>
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

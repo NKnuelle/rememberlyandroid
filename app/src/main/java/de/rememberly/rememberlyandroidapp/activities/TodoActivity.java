@@ -27,7 +27,7 @@ import de.rememberly.rememberlyandroidapp.R;
 import de.rememberly.rememberlyandroidapp.adapter.DoneTodoAdapter;
 import de.rememberly.rememberlyandroidapp.adapter.TodoAdapter;
 import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
-import de.rememberly.rememberlyandroidapp.model.ReturnMessage;
+import de.rememberly.rememberlyandroidapp.model.HttpResponse;
 import de.rememberly.rememberlyandroidapp.model.Todo;
 import de.rememberly.rememberlyandroidapp.remote.ApiUtils;
 import de.rememberly.rememberlyandroidapp.service.UserService;
@@ -156,20 +156,20 @@ public class TodoActivity extends AppCompatActivity {
 
         String token = "Bearer " + PreferencesManager.getUserToken(this);
 
-        Call<ReturnMessage> call = userService.updateTodo(token, todo);
-        call.enqueue(new Callback<ReturnMessage>() {
+        Call<HttpResponse> call = userService.updateTodo(token, todo);
+        call.enqueue(new Callback<HttpResponse>() {
             @Override
-            public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
+            public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {
                 if (response.isSuccessful()) {
-                    ReturnMessage returnMessage = response.body();
-                    Log.i("Todo Update: ", returnMessage.getMessage());
+                    HttpResponse httpResponse = response.body();
+                    Log.i("Todo Update: ", httpResponse.getMessage());
                 } else {
                     Log.e("Todo update failed: ", response.errorBody().toString());
                 }
             }
 
             @Override
-            public void onFailure(Call<ReturnMessage> call, Throwable t) {
+            public void onFailure(Call<HttpResponse> call, Throwable t) {
                 Toast.makeText(TodoActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -186,13 +186,13 @@ public class TodoActivity extends AppCompatActivity {
 
         String token = "Bearer " + PreferencesManager.getUserToken(this);
 
-        Call<ReturnMessage> call = userService.updateTodo(token, todo);
-        call.enqueue(new Callback<ReturnMessage>() {
+        Call<HttpResponse> call = userService.updateTodo(token, todo);
+        call.enqueue(new Callback<HttpResponse>() {
             @Override
-            public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
+            public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {
                 if (response.isSuccessful()) {
-                    ReturnMessage returnMessage = response.body();
-                    Log.i("Todo Update: ", returnMessage.getMessage());
+                    HttpResponse httpResponse = response.body();
+                    Log.i("Todo Update: ", httpResponse.getMessage());
                 } else {
                     Log.e("Todo update failed: ", response.errorBody().toString());
                 }
@@ -200,7 +200,7 @@ public class TodoActivity extends AppCompatActivity {
 
 
             @Override
-            public void onFailure(Call<ReturnMessage> call, Throwable t) {
+            public void onFailure(Call<HttpResponse> call, Throwable t) {
                 Toast.makeText(TodoActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

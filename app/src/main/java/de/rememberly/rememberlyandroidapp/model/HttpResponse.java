@@ -1,7 +1,10 @@
 package de.rememberly.rememberlyandroidapp.model;
 
-public class ReturnMessage {
-    public ReturnMessage(String message) {
+public class HttpResponse {
+    public HttpResponse() {
+
+    }
+    public HttpResponse(String message) {
         this.message = message;
     }
 

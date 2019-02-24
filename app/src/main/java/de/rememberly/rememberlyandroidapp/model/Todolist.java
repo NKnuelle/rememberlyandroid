@@ -1,6 +1,6 @@
 package de.rememberly.rememberlyandroidapp.model;
 
-public class Todolist {
+public class Todolist extends HttpResponse {
 
     public Todolist(String list_id, String list_name, String created_at, String owner, String isShared) {
         this.list_id = list_id;

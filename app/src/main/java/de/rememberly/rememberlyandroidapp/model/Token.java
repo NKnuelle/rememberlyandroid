@@ -1,6 +1,6 @@
 package de.rememberly.rememberlyandroidapp.model;
 
-public class Token {
+public class Token extends HttpResponse {
 
     public String getToken() {
         return token;

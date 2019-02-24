@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import de.rememberly.rememberlyandroidapp.R;
 import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
 import de.rememberly.rememberlyandroidapp.model.Notice;
-import de.rememberly.rememberlyandroidapp.model.ReturnMessage;
+import de.rememberly.rememberlyandroidapp.model.HttpResponse;
 import de.rememberly.rememberlyandroidapp.remote.ApiUtils;
 import de.rememberly.rememberlyandroidapp.service.UserService;
 import de.rememberly.rememberlyandroidapp.activities.EditorActivity;
@@ -157,19 +157,19 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
                             enterUsername.setError(context.getString(R.string.shareDialogUsernameRequired));
                         } else {
                             JsonObject sharedJSON = createShareJson(enterUsername.getText().toString(), notice.getNoticeID());
-                            Call<ReturnMessage> call = userService.shareNotice(token, sharedJSON);
-                            call.enqueue(new Callback<ReturnMessage>() {
+                            Call<HttpResponse> call = userService.shareNotice(token, sharedJSON);
+                            call.enqueue(new Callback<HttpResponse>() {
                                 @Override
-                                public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
+                                public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {
                                     if (response.isSuccessful()) {
                                         noticeData.get(position).setIsShared("1");
                                         NoticesOverviewAdapter.this.notifyItemChanged(position);
-                                        ReturnMessage returnMessage = response.body();
-                                        Toast.makeText(context, returnMessage.getMessage(), Toast.LENGTH_LONG).show();
+                                        HttpResponse httpResponse = response.body();
+                                        Toast.makeText(context, httpResponse.getMessage(), Toast.LENGTH_LONG).show();
                                     }
                                 }
                                 @Override
-                                public void onFailure(Call<ReturnMessage> call, Throwable t) {
+                                public void onFailure(Call<HttpResponse> call, Throwable t) {
                                     Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
@@ -215,19 +215,19 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
                             enterNewName.setError(context.getString(R.string.renameNoticeRequired));
                         } else {
                             notice.setNoticeName(enterNewName.getText().toString());
-                            Call<ReturnMessage> call = userService.updateNotice(token, notice);
-                            call.enqueue(new Callback<ReturnMessage>() {
+                            Call<HttpResponse> call = userService.updateNotice(token, notice);
+                            call.enqueue(new Callback<HttpResponse>() {
                                 @Override
-                                public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
+                                public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {
                                     if (response.isSuccessful()) {
-                                        ReturnMessage returnMessage = response.body();
-                                        Toast.makeText(context, returnMessage.getMessage(), Toast.LENGTH_LONG).show();
+                                        HttpResponse httpResponse = response.body();
+                                        Toast.makeText(context, httpResponse.getMessage(), Toast.LENGTH_LONG).show();
                                         NoticesOverviewAdapter.this.notifyItemChanged(position);
                                     }
 
                                 }
                                 @Override
-                                public void onFailure(Call<ReturnMessage> call, Throwable t) {
+                                public void onFailure(Call<HttpResponse> call, Throwable t) {
                                     Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
@@ -257,14 +257,14 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
                 String token = "Bearer " + PreferencesManager.getUserToken(context);
                 UserService userService = ApiUtils.getUserService();
 
-                Call<ReturnMessage> call = userService.deleteNotice(token, notice.getNoticeID());
+                Call<HttpResponse> call = userService.deleteNotice(token, notice.getNoticeID());
                 Log.i("List ID: ", notice.getNoticeID());
-                call.enqueue(new Callback<ReturnMessage>() {
+                call.enqueue(new Callback<HttpResponse>() {
                     @Override
-                    public void onResponse(Call<ReturnMessage> call, Response<ReturnMessage> response) {
+                    public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {
                         if (response.isSuccessful()) {
-                            ReturnMessage returnMessage = response.body();
-                            Log.i("Operation: ", returnMessage.getMessage());
+                            HttpResponse httpResponse = response.body();
+                            Log.i("Operation: ", httpResponse.getMessage());
                             // notify adapter for deletion
                             noticeData.remove(position);
                             NoticesOverviewAdapter.this.notifyItemRemoved(position);
@@ -275,7 +275,7 @@ public class NoticesOverviewAdapter extends RecyclerView.Adapter<NoticesOverview
 
 
                     @Override
-                    public void onFailure(Call<ReturnMessage> call, Throwable t) {
+                    public void onFailure(Call<HttpResponse> call, Throwable t) {
                         Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });

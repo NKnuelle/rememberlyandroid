@@ -7,16 +7,6 @@ public class ApiUtils {
 
     public static final String BASE_URL = "https://rememberly.nils-kretschmer.de/";
 
-    /*
-    public static Token getUserToken() {
-        return userToken;
-    }
-
-    public static void setUserToken(Token userToken) {
-        ApiUtils.userToken = userToken;
-    }
-    */
-
 
     public static String getBaseUrl() {
         return BASE_URL;
