@@ -21,7 +21,6 @@ public class PreferencesManager {
     }
     public static String getUserToken(Context context) {
         SharedPreferences sharedPreferences;
-        SharedPreferences.Editor spEditor;
         String decryptedToken = null;
         sharedPreferences = context.getSharedPreferences("API_SETTINGS", Context.MODE_PRIVATE);
         String encryptedToken = sharedPreferences.getString("usertoken", "NOT_SET");

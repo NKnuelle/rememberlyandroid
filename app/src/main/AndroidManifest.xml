@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -16,34 +16,38 @@
         android:roundIcon="@mipmap/rememberly_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.LoginActivity">
+        <activity android:name=".activities.StartupActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-ls
         <service android:name=".service.RememberlyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBe-G_CzN0f1aUZNFmcdJxJi132Se9FFBc"/>
+            android:value="AIzaSyBe-G_CzN0f1aUZNFmcdJxJi132Se9FFBc" />
 
         <activity android:name=".activities.MainMenu" />
         <activity android:name=".activities.TodolistActivity" />
         <activity android:name=".activities.TodoActivity" />
         <activity android:name=".activities.NoticesOverviewActivity" />
+        <activity android:name=".activities.LoginActivity" />
         <activity
             android:name=".activities.EditorActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".activities.RenderActivity" />
-        <activity android:name="com.github.irshulx.MapsActivity"></activity>
-        <meta-data android:name="com.google.android.gms.version"
+        <activity android:name="com.github.irshulx.MapsActivity" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
     </application>
 
 </manifest>

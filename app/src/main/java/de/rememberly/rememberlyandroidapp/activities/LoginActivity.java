@@ -35,14 +35,11 @@ public class LoginActivity extends AppCompatActivity {
     EditText passwordField;
     Button loginButton;
     UserService userService;
-    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userService = ApiUtils.getUserService();
-        progressBar = findViewById(R.id.loginbar);
-        progressBar.setVisibility(View.INVISIBLE);
 
         // init and build the activity
         buildActivity();
@@ -51,10 +48,6 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void init() {
 
-        String userToken = PreferencesManager.getUserToken(this);
-        String userpassword = PreferencesManager.getUserPassword(this);
-        String username = PreferencesManager.getUsername(this);
-        autoLogin(userToken, username, userpassword);
     }
     private void buildActivity() {
         // Build Login Activity
@@ -106,7 +99,6 @@ public class LoginActivity extends AppCompatActivity {
         Log.i("Credentials stored: ", username + " " + password);
     }
     private void userLogin(final String username, final String password) {
-        progressBar.setVisibility(View.VISIBLE);
         final String credentials = ApiUtils.getCredentialString(username, password);
         Call<Token> call = userService.login(credentials);
         call.enqueue(new Callback<Token>() {
@@ -120,7 +112,6 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(LoginActivity.this, "Username or password incorrect",
                             Toast.LENGTH_LONG).show();
-                    progressBar.setVisibility(View.INVISIBLE);
                     loginButton.setEnabled(true);
                 }
             }
@@ -129,28 +120,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(Call<Token> call, Throwable t) {
                 Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                 loginButton.setEnabled(true);
-            }
-        });
-    }
-    private void autoLogin(final String userToken, final String username, final String password) {
-        // deactivate loginbutton - gets activated if login fails
-        loginButton.setEnabled(false);
-        progressBar.setVisibility(View.VISIBLE);
-        Call<HttpResponse> call = userService.tokenLogin("Bearer " + userToken);
-        call.enqueue(new Callback<HttpResponse>() {
-            @Override
-            public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {
-                if (response.isSuccessful()) {
-                    startMenuActivity();
-                } else {
-                    Log.e("Token login: ", "Failed");
-                    // try login with username + password
-                    userLogin(username, password);
-                }
-            }
-            @Override
-            public void onFailure(Call<HttpResponse> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

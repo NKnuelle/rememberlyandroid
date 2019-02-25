@@ -64,14 +64,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/passwordfield" />
 
-    <ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/loginbar"
-        android:layout_width="50dp" android:layout_height="50dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginbutton">
-
-    </ProgressBar>
-
 </android.support.constraint.ConstraintLayout>

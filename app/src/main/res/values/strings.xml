@@ -21,4 +21,5 @@
     <string name="title_activity_maps">MapsActivity</string>
     <string name="noticeEditorTitle">Notice Title</string>
     <string name="buttonDesc">buttonDesc</string>
+    <string name="loginMessage">Logging in...</string>
 </resources>
