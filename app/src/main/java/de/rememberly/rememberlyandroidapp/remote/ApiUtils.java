@@ -5,17 +5,8 @@ import okhttp3.Credentials;
 
 public class ApiUtils {
 
-    public static final String BASE_URL = "https://rememberly.nils-kretschmer.de/";
-
-
-    public static String getBaseUrl() {
-        return BASE_URL;
-    }
-
-
-
-    public static UserService getUserService() {
-        return RetrofitClient.getClient(BASE_URL).create(UserService.class);
+    public static UserService getUserService(String url) {
+        return RetrofitClient.getClient(url).create(UserService.class);
     }
     public static String getCredentialString(String username, String password) {
         return Credentials.basic(username, password);

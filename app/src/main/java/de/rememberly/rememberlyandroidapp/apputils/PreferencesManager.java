@@ -70,6 +70,20 @@ public class PreferencesManager {
         sharedPreferences = context.getSharedPreferences("API_SETTINGS", Context.MODE_PRIVATE);
         return sharedPreferences.getString("username", "NOT_SET");
     }
+    public static void storeURL(String url, Context context) {
+        SharedPreferences sharedPreferences;
+        SharedPreferences.Editor spEditor;
+        sharedPreferences = context.getSharedPreferences("API_SETTINGS", Context.MODE_PRIVATE);
+        spEditor = sharedPreferences.edit();
+        spEditor.putString("serverurl", url);
+        spEditor.commit();
+    }
+    public static String getURL(Context context) {
+        SharedPreferences sharedPreferences;
+        SharedPreferences.Editor spEditor;
+        sharedPreferences = context.getSharedPreferences("API_SETTINGS", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("serverurl", "NOT_SET");
+    }
 //    public static void storeIV(String iv, Context context) {
 //        SharedPreferences sharedPreferences;
 //        SharedPreferences.Editor spEditor;
