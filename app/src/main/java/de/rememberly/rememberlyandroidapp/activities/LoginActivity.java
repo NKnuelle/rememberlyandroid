@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import de.rememberly.rememberlyandroidapp.R;
+import de.rememberly.rememberlyandroidapp.apputils.APICall;
 import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
 import de.rememberly.rememberlyandroidapp.model.Token;
 import de.rememberly.rememberlyandroidapp.remote.ApiUtils;
@@ -29,6 +30,9 @@ public class LoginActivity extends AppCompatActivity implements ILoginActivity {
     EditText urlField;
     Button loginButton;
     UserService userService;
+    String username;
+    String password;
+    String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +69,14 @@ public class LoginActivity extends AppCompatActivity implements ILoginActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = loginField.getText().toString();
-                String password = passwordField.getText().toString();
-                String url = urlField.getText().toString();
+                username = loginField.getText().toString();
+                password = passwordField.getText().toString();
+                url = urlField.getText().toString();
                 // validate form
                 if (validateLogin(username, password, url)) {
                     // do login
-                    userLogin(username, password, url);
+                    APICall apiCall = new APICall(url);
+                    apiCall.userLogin(LoginActivity.this, username, password);
                 }
             }
         });
@@ -97,37 +102,21 @@ public class LoginActivity extends AppCompatActivity implements ILoginActivity {
         PreferencesManager.storeUserPassword(password, this);
         PreferencesManager.storeURL(url, this);
     }
-    private void userLogin(final String username, final String password, final String url) {
-        final String credentials = ApiUtils.getCredentialString(username, password);
-        Call<Token> call = userService.login(credentials);
-        call.enqueue(new Callback<Token>() {
-            @Override
-            public void onResponse(Call<Token> call, Response<Token> response) {
-                if (response.isSuccessful()) {
-                    Token userToken = response.body();
-                    PreferencesManager.storeUserToken(userToken.getToken(), LoginActivity.this);
-                    storeCredentials(username, password, url);
-                    startMenuActivity();
-                } else {
-                    Toast.makeText(LoginActivity.this, "Username, password or URL incorrect",
-                            Toast.LENGTH_LONG).show();
-                    loginButton.setEnabled(true);
-                }
-            }
 
-            @Override
-            public void onFailure(Call<Token> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                loginButton.setEnabled(true);
-            }
-        });
-    }
     private void startMenuActivity() {
         Intent intent = new Intent(LoginActivity.this, MainMenu.class);
         startActivity(intent);
         LoginActivity.this.finish();
     }
-    public void onLoginSuccess() {
+    public void onLoginSuccess(Token token) {
+        PreferencesManager.storeUserToken(token.getToken(), LoginActivity.this);
+        storeCredentials(username, password, url);
         startMenuActivity();
+    }
+    public void onLoginFailure(Throwable t) {
+        Toast.makeText(this, t.getMessage(), Toast.LENGTH_LONG).show();
+    }
+    public void onLoginError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }

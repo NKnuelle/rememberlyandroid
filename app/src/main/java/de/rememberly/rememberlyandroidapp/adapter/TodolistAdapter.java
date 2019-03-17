@@ -71,11 +71,11 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
         initShareIcon(holder, position);
     }
     private void initTodoview(final TodoViewHolder holder, final int position) {
-        holder.todoView.setText(todoData.get(position).getList_name());
+        holder.todoView.setText(todoData.get(position).getListName());
         holder.todoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String listID = todoData.get(position).getList_id();
+                String listID = todoData.get(position).getListID();
                 Intent intent = new Intent(holder.todoView.getContext(), TodoActivity.class);
                 intent.putExtra("list_id", listID);
                 holder.todoView.getContext().startActivity(intent);
@@ -161,7 +161,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                         if (enterUsername.getText().toString().isEmpty()) {
                             enterUsername.setError(context.getString(R.string.shareDialogUsernameRequired));
                         } else {
-                            JsonObject sharedJSON = createShareJson(enterUsername.getText().toString(), list.getList_id());
+                            JsonObject sharedJSON = createShareJson(enterUsername.getText().toString(), list.getListID());
                             Call<HttpResponse> call = userService.shareTodolist(token, sharedJSON);
                             call.enqueue(new Callback<HttpResponse>() {
                                 @Override
@@ -220,7 +220,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                         if (enterNewName.getText().toString().isEmpty()) {
                             enterNewName.setError(context.getString(R.string.renameListRequired));
                         } else {
-                            list.setList_name(enterNewName.getText().toString());
+                            list.setListName(enterNewName.getText().toString());
                             Call<HttpResponse> call = userService.updateTodolist(token, list);
                             call.enqueue(new Callback<HttpResponse>() {
                                 @Override
@@ -261,8 +261,8 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.TodoVi
                 String token = "Bearer " + PreferencesManager.getUserToken(context);
                 UserService userService = ApiUtils.getUserService();
 
-                Call<HttpResponse> call = userService.deleteTodolist(token, list.getList_id());
-                Log.i("List ID: ", list.getList_id());
+                Call<HttpResponse> call = userService.deleteTodolist(token, list.getListID());
+                Log.i("List ID: ", list.getListID());
                 call.enqueue(new Callback<HttpResponse>() {
                     @Override
                     public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {

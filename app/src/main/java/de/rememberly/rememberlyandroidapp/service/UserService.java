@@ -39,7 +39,7 @@ public interface UserService {
     Call<Token> newToken(@Header("Authorization") String oldToken);
 
     @POST("api/tokenlogin")
-    Call<HttpResponse> tokenLogin(@Header("Authorization") String userToken);
+    Call<Token> tokenLogin(@Header("Authorization") String userToken);
 
     @POST("api/todolist/new")
     Call<Todolist> newTodolist(@Header("Authorization") String token, @Body Todolist newTodolist);

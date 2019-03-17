@@ -7,6 +7,7 @@ import android.widget.Toast;
 import de.rememberly.rememberlyandroidapp.R;
 import de.rememberly.rememberlyandroidapp.apputils.APICall;
 import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
+import de.rememberly.rememberlyandroidapp.model.Token;
 
 public class StartupActivity extends AppCompatActivity implements ILoginActivity {
 
@@ -23,7 +24,7 @@ public class StartupActivity extends AppCompatActivity implements ILoginActivity
         String username = PreferencesManager.getUsername(this);
         APICall apiCall = new APICall(PreferencesManager.getURL(this));
     }
-    public void onLoginSuccess() {
+    public void onLoginSuccess(Token token) {
 
     }
     public void onLoginFailure(Throwable t) {

@@ -2,39 +2,39 @@ package de.rememberly.rememberlyandroidapp.model;
 
 public class Todolist extends HttpResponse {
 
-    public Todolist(String list_id, String list_name, String created_at, String owner, String isShared) {
-        this.list_id = list_id;
-        this.list_name = list_name;
-        this.created_at = created_at;
+    public Todolist(String listID, String listName, String createdAt, String owner, String isShared) {
+        this.listID = listID;
+        this.listName = listName;
+        this.createdAt = createdAt;
         this.owner = owner;
         this.isShared = isShared;
     }
-    public Todolist(String list_name) {
-        this.list_name = list_name;
+    public Todolist(String listName) {
+        this.listName = listName;
     }
 
-    public String getList_id() {
-        return list_id;
+    public String getListID() {
+        return listID;
     }
 
-    public void setList_id(String list_id) {
-        this.list_id = list_id;
+    public void setListID(String listID) {
+        this.listID = listID;
     }
 
-    public String getList_name() {
-        return list_name;
+    public String getListName() {
+        return listName;
     }
 
-    public void setList_name(String list_name) {
-        this.list_name = list_name;
+    public void setListName(String listName) {
+        this.listName = listName;
     }
 
-    public String getCreated_at() {
-        return created_at;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getOwner() {
@@ -45,10 +45,10 @@ public class Todolist extends HttpResponse {
         this.owner = owner;
     }
 
-    private String list_name;
-    private String created_at;
+    private String listName;
+    private String createdAt;
     private String owner;
-    private String list_id;
+    private String listID;
 
     public boolean IsShared() {
         return (isShared.equals("1"));
