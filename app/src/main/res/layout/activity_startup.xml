@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.rememberly.rememberlyandroidapp.activities.StartupActivity">
+    tools:context="de.rememberly.rememberlyandroidapp.activities.StartupActivity"
+    android:background="@drawable/android_gradient_list"
+    android:id="@+id/AnimationRootLayout">
 
     <ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/loginbar"

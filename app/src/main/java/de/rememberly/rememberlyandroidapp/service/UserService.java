@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 
 import java.util.List;
 
-import de.rememberly.rememberlyandroidapp.model.Notice;
+import de.rememberly.rememberlyandroidapp.model.Note;
 import de.rememberly.rememberlyandroidapp.model.HttpResponse;
 import de.rememberly.rememberlyandroidapp.model.Todo;
 import de.rememberly.rememberlyandroidapp.model.Todolist;
@@ -26,11 +26,11 @@ public interface UserService {
     @GET("api/todolists")
     Call<List<Todolist>> getTodolist(@Header("Authorization") String token);
 
-    @GET("api/notices")
-    Call<List<Notice>> getNotices(@Header("Authorization") String token);
+    @GET("api/notes")
+    Call<List<Note>> getNotes(@Header("Authorization") String token);
 
-    @GET("api/todos/{list_id}")
-    Call<List<Todo>> getTodos(@Header("Authorization") String token, @Path("list_id") String list_id);
+    @GET("api/todos/{listID}")
+    Call<List<Todo>> getTodos(@Header("Authorization") String token, @Path("listID") String listID);
 
     @POST("api/todo/new")
     Call<Todo> newTodo(@Header("Authorization") String token, @Body Todo newTodo);
@@ -44,8 +44,8 @@ public interface UserService {
     @POST("api/todolist/new")
     Call<Todolist> newTodolist(@Header("Authorization") String token, @Body Todolist newTodolist);
 
-    @POST("api/notice/new")
-    Call<Notice> newNotice(@Header("Authorization") String token, @Body Notice newNotice);
+    @POST("api/note/new")
+    Call<Note> newNote(@Header("Authorization") String token, @Body Note newNote);
 
     @PUT("api/todo/update")
     Call<HttpResponse> updateTodo(@Header("Authorization") String token, @Body Todo updateTodo);
@@ -53,20 +53,20 @@ public interface UserService {
     @PUT("api/todolist/update")
     Call<HttpResponse> updateTodolist(@Header("Authorization") String token, @Body Todolist updateTodolist);
 
-    @PUT("api/notice/update")
-    Call<HttpResponse> updateNotice(@Header("Authorization") String token, @Body Notice updateNotice);
+    @PUT("api/note/update")
+    Call<HttpResponse> updateNote(@Header("Authorization") String token, @Body Note updateNote);
 
-    @DELETE("api/todolist/delete/{list_id}")
-    Call<HttpResponse> deleteTodolist(@Header("Authorization") String token, @Path("list_id") String list_id);
+    @DELETE("api/todolist/delete/{listID}")
+    Call<HttpResponse> deleteTodolist(@Header("Authorization") String token, @Path("listID") String listID);
 
-    @DELETE("api/notice/delete/{noticeID}")
-    Call<HttpResponse> deleteNotice(@Header("Authorization") String token, @Path("noticeID") String noticeID);
+    @DELETE("api/note/delete/{noteID}")
+    Call<HttpResponse> deleteNote(@Header("Authorization") String token, @Path("noteID") String noteID);
 
     @POST("api/todolist/share")
     Call<HttpResponse> shareTodolist(@Header("Authorization") String token, @Body JsonObject json);
 
-    @POST("api/notice/share")
-    Call<HttpResponse> shareNotice(@Header("Authorization") String token, @Body JsonObject json);
+    @POST("api/note/share")
+    Call<HttpResponse> shareNote(@Header("Authorization") String token, @Body JsonObject json);
 
 
 }

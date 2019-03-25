@@ -34,15 +34,19 @@
             android:value="AIzaSyBe-G_CzN0f1aUZNFmcdJxJi132Se9FFBc" />
 
         <activity android:name=".activities.MainMenu" />
-        <activity android:name=".activities.TodolistActivity" />
-        <activity android:name=".activities.TodoActivity" />
-        <activity android:name=".activities.NoticesOverviewActivity" />
+        <activity android:name=".activities.TodolistActivity"
+            android:parentActivityName=".activities.MainMenu" />
+        <activity android:name=".activities.TodoActivity"
+            android:parentActivityName=".activities.TodolistActivity"/>
+        <activity android:name=".activities.NoteOverviewActivity"
+            android:parentActivityName=".activities.MainMenu"/>
         <activity android:name=".activities.LoginActivity" />
+        <activity android:name=".activities.AnimationActivity" />
         <activity
-            android:name=".activities.EditorActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".activities.RenderActivity" />
-        <activity android:name="com.github.irshulx.MapsActivity" />
+            android:name=".activities.NoteActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".activities.NoteOverviewActivity"/>
+        <activity android:name=".activities.RememberlyStdMenuActivity" />
 
         <meta-data
             android:name="com.google.android.gms.version"

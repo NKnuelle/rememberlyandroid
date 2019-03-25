@@ -1,14 +1,12 @@
 package de.rememberly.rememberlyandroidapp.activities;
 
 import android.content.Intent;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -16,7 +14,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,13 +26,10 @@ import de.rememberly.rememberlyandroidapp.adapter.TodoAdapter;
 import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
 import de.rememberly.rememberlyandroidapp.model.HttpResponse;
 import de.rememberly.rememberlyandroidapp.model.Todo;
-import de.rememberly.rememberlyandroidapp.remote.ApiUtils;
-import de.rememberly.rememberlyandroidapp.service.UserService;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import de.rememberly.rememberlyandroidapp.remote.APICall;
+import de.rememberly.rememberlyandroidapp.remote.IApiCallback;
 
-public class TodoActivity extends AppCompatActivity {
+public class TodoActivity extends RememberlyStdMenuActivity implements IApiCallback {
 
     private RecyclerView todoRecyclerView;
     private RecyclerView.Adapter todoAdapter;
@@ -43,7 +37,6 @@ public class TodoActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager doneTodoManager;
     private RecyclerView doneTodoRecyclerView;
     private RecyclerView.Adapter doneTodoAdapter;
-    private UserService userService;
     private String listID;
     private ArrayList<Todo> todoData = new ArrayList<Todo>();;
     private ArrayList<Todo> doneTodoData = new ArrayList<Todo>();
@@ -51,6 +44,7 @@ public class TodoActivity extends AppCompatActivity {
     private Button doneTodoButton;
     private EditText todoEdit;
     private SwipeRefreshLayout swipeContainer;
+    private APICall apiCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +53,9 @@ public class TodoActivity extends AppCompatActivity {
 
         // set background animation:
         NestedScrollView scrollView = findViewById(R.id.AnimationRootLayout);
-        AnimationDrawable animationDrawable = (AnimationDrawable) scrollView.getBackground();
-        animationDrawable.setEnterFadeDuration(2000);
-        animationDrawable.setExitFadeDuration(4000);
-        animationDrawable.start();
+        super.setupAnimation(scrollView);
+        Toolbar mainToolbar = (Toolbar) findViewById(R.id.mainToolbar);
+        super.setupStdToolbar(mainToolbar);
 
         todoRecyclerView = findViewById(R.id.todo_recycler_view);
         doneTodoRecyclerView = findViewById(R.id.checkedtodolist);
@@ -73,13 +66,13 @@ public class TodoActivity extends AppCompatActivity {
         doneTodoManager = new LinearLayoutManager(this);
         todoRecyclerView.setLayoutManager(todoManager);
         doneTodoRecyclerView.setLayoutManager(doneTodoManager);
-        userService = ApiUtils.getUserService();
         todoAdapter = new TodoAdapter(todoData);
         doneTodoAdapter = new DoneTodoAdapter(doneTodoData);
         doneTodoRecyclerView.setAdapter(doneTodoAdapter);
         todoRecyclerView.setAdapter(todoAdapter);
         doneTodoButton.setVisibility(View.GONE);
         doneTodoRecyclerView.setVisibility(View.GONE);
+        apiCall = new APICall(PreferencesManager.getURL(this));
         setupSwipeAndRefresh();
         initTodos();
         initImagebutton();
@@ -143,7 +136,7 @@ public class TodoActivity extends AppCompatActivity {
     public void setTodoDone(Todo todo, int position) {
         todoData.remove(position);
         todoAdapter.notifyItemRemoved(position);
-        todo.setIs_checked("1");
+        todo.setIsChecked("1");
         doneTodoData.add(0, todo);
         if (doneTodoData.size() > 0) {
             doneTodoButton.setVisibility(View.VISIBLE);
@@ -153,26 +146,8 @@ public class TodoActivity extends AppCompatActivity {
             doneTodoData.remove(15);
             doneTodoAdapter.notifyItemRemoved(15);
         }
+        apiCall.updateTodo(this, PreferencesManager.getUserToken(this), todo);
 
-        String token = "Bearer " + PreferencesManager.getUserToken(this);
-
-        Call<HttpResponse> call = userService.updateTodo(token, todo);
-        call.enqueue(new Callback<HttpResponse>() {
-            @Override
-            public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {
-                if (response.isSuccessful()) {
-                    HttpResponse httpResponse = response.body();
-                    Log.i("Todo Update: ", httpResponse.getMessage());
-                } else {
-                    Log.e("Todo update failed: ", response.errorBody().toString());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<HttpResponse> call, Throwable t) {
-                Toast.makeText(TodoActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
     public void setTodoUndone(Todo todo, int position) {
         doneTodoData.remove(position);
@@ -180,92 +155,61 @@ public class TodoActivity extends AppCompatActivity {
         if (doneTodoData.size() == 0) {
             doneTodoButton.setVisibility(View.GONE);
         }
-        todo.setIs_checked("0");
+        todo.setIsChecked("0");
         todoData.add(0, todo);
         todoAdapter.notifyItemInserted(0);
 
-        String token = "Bearer " + PreferencesManager.getUserToken(this);
-
-        Call<HttpResponse> call = userService.updateTodo(token, todo);
-        call.enqueue(new Callback<HttpResponse>() {
-            @Override
-            public void onResponse(Call<HttpResponse> call, Response<HttpResponse> response) {
-                if (response.isSuccessful()) {
-                    HttpResponse httpResponse = response.body();
-                    Log.i("Todo Update: ", httpResponse.getMessage());
-                } else {
-                    Log.e("Todo update failed: ", response.errorBody().toString());
-                }
-            }
-
-
-            @Override
-            public void onFailure(Call<HttpResponse> call, Throwable t) {
-                Toast.makeText(TodoActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        apiCall.updateTodo(this, PreferencesManager.getUserToken(this), todo);
     }
     private void initTodos() {
         String token = PreferencesManager.getUserToken(this);
         Intent intent = getIntent();
-        listID = intent.getStringExtra("list_id");
-        Call<List<Todo>> call = userService.getTodos("Bearer " + token, listID);
-        call.enqueue(new Callback<List<Todo>>() {
-            @Override
-            public void onResponse(Call<List<Todo>> call, Response<List<Todo>> response) {
-                if (response.isSuccessful() && !response.body().isEmpty()) {
-                    ArrayList<Todo> todolistArray = (ArrayList<Todo>) response.body();
-                    // Add Names from API
-                    for (Todo todo : todolistArray) {
-                        if (todo.getIs_checked().equals("0")) {
-                            todoData.add(0, todo);
-                            todoAdapter.notifyItemInserted(0);
-                        } else {
-                            doneTodoData.add(0, todo);
-                            doneTodoAdapter.notifyItemInserted(0);
-                        }
-
-                    }
-                    if (doneTodoData.size() > 0) {
-                        doneTodoButton.setVisibility(View.VISIBLE);
-                    }
-
-
-                } else {
-                    Log.e("Error: ", Integer.toString(response.code()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Todo>> call, Throwable t) {
-                Toast.makeText(TodoActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        listID = intent.getStringExtra("listID");
+        apiCall.getTodos(this, token, listID);
     }
     private void addTodo() {
         String newTodoText = todoEdit.getText().toString();
+        String token = PreferencesManager.getUserToken(this);
         if (!newTodoText.isEmpty()) {
             Todo newTodo = new Todo(listID, null, null,
                     newTodoText, null, "0");
-            Call<Todo> call = userService.newTodo("Bearer " + PreferencesManager.getUserToken(TodoActivity.this), newTodo);
-            call.enqueue(new Callback<Todo>() {
-                @Override
-                public void onResponse(Call<Todo> call, Response<Todo> response) {
-                    if (response.isSuccessful()) {
-                        Todo responseTodo = response.body();
-                        todoData.add(0, responseTodo);
-                        todoAdapter.notifyItemInserted(0);
-                        todoEdit.setText("");
-                    } else {
-                        Log.e("Error: ",response.body().toString());
-                    }
-                }
+            apiCall.addTodo(this, token, newTodo);
+        }
+    }
+    public void onSuccess(int requestCode, HttpResponse httpResponse) {
+        if (requestCode == APICall.UPDATE_TODO) {
+            Log.i("Todo update: ", "Successful");
+        }
+        if (requestCode == APICall.NEW_TODO) {
+            Todo responseTodo = (Todo) httpResponse;
+            todoData.add(0, responseTodo);
+            todoAdapter.notifyItemInserted(0);
+            todoEdit.setText("");
+        }
+    }
 
-                @Override
-                public void onFailure(Call<Todo> call, Throwable t) {
-                    Toast.makeText(TodoActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+    public void onFailure(int requestCode, Throwable t) {
+        Toast.makeText(this, t.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    public void onError(int requestCode, HttpResponse httpResponse) {
+        Toast.makeText(this, httpResponse.getMessage(), Toast.LENGTH_LONG).show();
+    }
+    public void onTodosReceived(List<Todo> todoList) {
+        ArrayList<Todo> todolistArray = (ArrayList<Todo>) todoList;
+        // Add Names from API
+        for (Todo todo : todolistArray) {
+            if (todo.getIsChecked().equals("0")) {
+                todoData.add(0, todo);
+                todoAdapter.notifyItemInserted(0);
+            } else {
+                doneTodoData.add(0, todo);
+                doneTodoAdapter.notifyItemInserted(0);
+            }
+
+        }
+        if (doneTodoData.size() > 0) {
+            doneTodoButton.setVisibility(View.VISIBLE);
         }
     }
 }

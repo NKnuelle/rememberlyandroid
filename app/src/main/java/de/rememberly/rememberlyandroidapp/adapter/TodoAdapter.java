@@ -42,7 +42,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
     public void onBindViewHolder(final TodoViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.todoCheck.setText(todos.get(position).getTodo_text());
+        holder.todoCheck.setText(todos.get(position).getTodoText());
         holder.todoCheck.setChecked(false);
         holder.todoCheck.setOnClickListener(new View.OnClickListener() {
             @Override

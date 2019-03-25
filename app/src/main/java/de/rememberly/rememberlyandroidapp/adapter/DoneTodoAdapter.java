@@ -1,6 +1,7 @@
 package de.rememberly.rememberlyandroidapp.adapter;
 
 import android.graphics.Paint;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +17,11 @@ import de.rememberly.rememberlyandroidapp.model.Todo;
 public class DoneTodoAdapter extends RecyclerView.Adapter<DoneTodoAdapter.TodoViewHolder> {
     private ArrayList<Todo> todos;
 
-    public static class TodoViewHolder extends RecyclerView.ViewHolder {
+    static class TodoViewHolder extends RecyclerView.ViewHolder {
 
-        public CheckBox todoCheck;
+        CheckBox todoCheck;
 
-        public TodoViewHolder(CheckBox checkBox) {
+        TodoViewHolder(CheckBox checkBox) {
             super(checkBox);
             todoCheck = checkBox;
         }
@@ -29,21 +30,21 @@ public class DoneTodoAdapter extends RecyclerView.Adapter<DoneTodoAdapter.TodoVi
             todos = dataset;
         }
         @Override
-        public DoneTodoAdapter.TodoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        @NonNull
+        public DoneTodoAdapter.TodoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             // create a new view
             CheckBox v = (CheckBox) LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.todo_view, parent, false);
 
-            TodoViewHolder vh = new TodoViewHolder(v);
-            return vh;
+            return new TodoViewHolder(v);
         }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(final TodoViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final TodoViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.todoCheck.setText(todos.get(position).getTodo_text());
+        holder.todoCheck.setText(todos.get(position).getTodoText());
         holder.todoCheck.setChecked(true);
         holder.todoCheck.setPaintFlags(holder.todoCheck.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         holder.todoCheck.setOnClickListener(new View.OnClickListener() {

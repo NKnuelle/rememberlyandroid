@@ -1,68 +1,68 @@
 package de.rememberly.rememberlyandroidapp.model;
 
 public class Todo extends HttpResponse{
-    public String getList_id() {
-        return list_id;
+    public String getListID() {
+        return listID;
     }
 
-    public void setList_id(String list_id) {
-        this.list_id = list_id;
+    public void setListID(String listID) {
+        this.listID = listID;
     }
 
-    public String getCreated_at() {
-        return created_at;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getExpires_on() {
-        return expires_on;
+    public String getExpiresOn() {
+        return expiresOn;
     }
 
-    public void setExpires_on(String expires_on) {
-        this.expires_on = expires_on;
+    public void setExpiresOn(String expiresOn) {
+        this.expiresOn = expiresOn;
     }
 
-    public String getTodo_text() {
-        return todo_text;
+    public String getTodoText() {
+        return todoText;
     }
 
-    public void setTodo_text(String todo_text) {
-        this.todo_text = todo_text;
+    public void setTodoText(String todoText) {
+        this.todoText = todoText;
     }
 
-    public String getTodo_id() {
-        return todo_id;
+    public String getTodoID() {
+        return todoID;
     }
 
-    public void setTodo_id(String todo_id) {
-        this.todo_id = todo_id;
+    public void setTodoID(String todoID) {
+        this.todoID = todoID;
     }
 
-    public String getIs_checked() {
-        return is_checked;
+    public String getIsChecked() {
+        return isChecked;
     }
 
-    public void setIs_checked(String is_checked) {
-        this.is_checked = is_checked;
+    public void setIsChecked(String isChecked) {
+        this.isChecked = isChecked;
     }
 
-    public Todo(String list_id, String created_at, String expires_on,
-                String todo_text, String todo_id, String is_checked) {
-        this.list_id = list_id;
-        this.created_at = created_at;
-        this.expires_on = expires_on;
-        this.todo_text = todo_text;
-        this.todo_id = todo_id;
-        this.is_checked = is_checked;
+    public Todo(String listID, String createdAt, String expiresOn,
+                String todoText, String todoID, String isChecked) {
+        this.listID = listID;
+        this.createdAt = createdAt;
+        this.expiresOn = expiresOn;
+        this.todoText = todoText;
+        this.todoID = todoID;
+        this.isChecked = isChecked;
     }
 
-    private String list_id;
-    private String created_at;
-    private String expires_on;
-    private String todo_text;
-    private String todo_id;
-    private String is_checked;
+    private String listID;
+    private String createdAt;
+    private String expiresOn;
+    private String todoText;
+    private String todoID;
+    private String isChecked;
 }

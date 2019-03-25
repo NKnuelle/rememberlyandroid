@@ -1,7 +1,7 @@
 package de.rememberly.rememberlyandroidapp.activities;
 
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,22 +18,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.rememberly.rememberlyandroidapp.R;
-import de.rememberly.rememberlyandroidapp.adapter.TodolistAdapter;
-import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
+import de.rememberly.rememberlyandroidapp.adapter.NoteOverviewAdapter;
 import de.rememberly.rememberlyandroidapp.model.HttpResponse;
-import de.rememberly.rememberlyandroidapp.model.Todolist;
-import de.rememberly.rememberlyandroidapp.model.Token;
+import de.rememberly.rememberlyandroidapp.model.Note;
 import de.rememberly.rememberlyandroidapp.remote.APICall;
+import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
+import de.rememberly.rememberlyandroidapp.model.Token;
 import de.rememberly.rememberlyandroidapp.remote.IApiCallback;
 
-public class TodolistActivity extends RememberlyStdMenuActivity implements IApiCallback {
-    private RecyclerView todoRecyclerView;
-    private RecyclerView.Adapter todolistAdapter;
-    private RecyclerView.LayoutManager todoManager;
-    private ArrayList<Todolist> todoData = new ArrayList<Todolist>();
-    private ImageButton imageButton;
-    private EditText todoEdit;
+public class NoteOverviewActivity extends RememberlyStdMenuActivity implements IApiCallback {
+    private RecyclerView listRecyclerView;
+    private NoteOverviewAdapter noteOverviewAdapter;
+    private RecyclerView.LayoutManager listManager;
     private APICall apiCall;
+    private ArrayList<Note> noteData = new ArrayList<Note>();
+    ;
+    private ImageButton addButton;
+    private EditText listAddEdittext;
     private SwipeRefreshLayout swipeContainer;
 
     @Override
@@ -46,53 +47,54 @@ public class TodolistActivity extends RememberlyStdMenuActivity implements IApiC
         Toolbar mainToolbar = (Toolbar) findViewById(R.id.mainToolbar);
         super.setupStdToolbar(mainToolbar);
 
-        todoRecyclerView = findViewById(R.id.listRecyclerView);
-        todoManager = new LinearLayoutManager(this);
-        todoEdit = findViewById(R.id.newListItemInput);
-        todoEdit.setHint(getResources().getString(R.string.inputNewListName));
-        todoRecyclerView.setLayoutManager(todoManager);
-        imageButton = findViewById(R.id.imageButton);
-        todolistAdapter = new TodolistAdapter(this, todoData);
-        todoRecyclerView.setAdapter(todolistAdapter);
+        listRecyclerView = findViewById(R.id.listRecyclerView);
+        listManager = new LinearLayoutManager(this);
+        listAddEdittext = findViewById(R.id.newListItemInput);
+        listAddEdittext.setHint(getResources().getString(R.string.inputNewNoteName));
+        listRecyclerView.setLayoutManager(listManager);
+        addButton = findViewById(R.id.imageButton);
+        noteOverviewAdapter = new NoteOverviewAdapter(this, noteData);
+        listRecyclerView.setAdapter(noteOverviewAdapter);
         apiCall = new APICall(PreferencesManager.getURL(this));
-        setupSwipeAndRefresh();
+
         initImagebutton();
-        initTodolists();
+        initNotes();
         initEditDoneButton();
+        setupSwipeAndRefresh();
     }
 
     private void initImagebutton() {
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addTodolist();
+                addNote();
             }
         });
     }
     private void initEditDoneButton() {
-        todoEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        listAddEdittext.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    addTodolist();
+                    addNote();
                     return true;
                 }
                 return false;
             }
         });
     }
-    private void addTodolist() {
-        String newTodolistText = todoEdit.getText().toString();
-        if (!newTodolistText.isEmpty()) {
-            Todolist newTodolist = new Todolist(newTodolistText);
-            String token = PreferencesManager.getUserToken(TodolistActivity.this);
-            apiCall.newTodolist(TodolistActivity.this, token, newTodolist);
+    private void addNote() {
+        String newNoteText = listAddEdittext.getText().toString();
+        if (!newNoteText.isEmpty()) {
+            Note newNote = new Note(newNoteText);
+            apiCall.newNote(NoteOverviewActivity.this,
+                    PreferencesManager.getUserToken(NoteOverviewActivity.this), newNote);
         }
     }
 
-    private void initTodolists() {
+    private void initNotes() {
         String token = PreferencesManager.getUserToken(this);
-        apiCall.getTodolists(this, token);
+        apiCall.getNotes(this, token);
     }
 
     private void setupSwipeAndRefresh() {
@@ -101,11 +103,14 @@ public class TodolistActivity extends RememberlyStdMenuActivity implements IApiC
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                apiCall.getNewToken(TodolistActivity.this,
-                        PreferencesManager.getUserToken(TodolistActivity.this));
-                todoData.clear();
-                todolistAdapter.notifyDataSetChanged();
-                initTodolists();
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                apiCall.getNewToken(NoteOverviewActivity.this,
+                        PreferencesManager.getUserToken(NoteOverviewActivity.this));
+                noteData.clear();
+                noteOverviewAdapter.notifyDataSetChanged();
+                initNotes();
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -114,20 +119,18 @@ public class TodolistActivity extends RememberlyStdMenuActivity implements IApiC
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
     }
-
     public void onSuccess(int requestCode, HttpResponse httpResponse) {
-        if (requestCode == APICall.NEW_TODOLIST) {
-            Todolist responseTodolist = (Todolist) httpResponse;
-            todoData.add(0, responseTodolist);
-            todolistAdapter.notifyItemInserted(todoData.size() - 1);
-            apiCall.getNewToken(this, PreferencesManager.getUserToken(this));
-            todoEdit.setText("");
+        if (requestCode == APICall.CREATE_NOTE) {
+            Note responseNote = (Note) httpResponse;
+            noteData.add(responseNote);
+            noteOverviewAdapter.notifyItemInserted(noteData.size() - 1);
+            apiCall.getNewToken(NoteOverviewActivity.this,
+                    PreferencesManager.getUserToken(NoteOverviewActivity.this));
         }
         if (requestCode == APICall.NEW_TOKEN) {
             Token newToken = (Token) httpResponse;
-            PreferencesManager.storeUserToken(newToken.getToken(), TodolistActivity.this);
+            PreferencesManager.storeUserToken(newToken.getToken(), NoteOverviewActivity.this);
         }
-
     }
 
     public void onFailure(int requestCode, Throwable t) {
@@ -138,11 +141,12 @@ public class TodolistActivity extends RememberlyStdMenuActivity implements IApiC
         Toast.makeText(this, httpResponse.getMessage(), Toast.LENGTH_LONG).show();
     }
 
-    public void onTodolistsReceived(List<Todolist> todolists) {
-        ArrayList<Todolist> todolistArray = (ArrayList<Todolist>) todolists;
-        for (Todolist todolist : todolistArray) {
-            todoData.add(todolist);
-            todolistAdapter.notifyItemInserted(todoData.size() - 1);
+    public void onNotesReceived(List<Note> noteList) {
+        noteOverviewAdapter.clear();
+        ArrayList<Note> noteArray = (ArrayList<Note>) noteList;
+        for (Note note : noteArray) {
+            noteData.add(note);
+            noteOverviewAdapter.notifyItemInserted(noteData.size() - 1);
         }
     }
     public void showMessage(String message) {

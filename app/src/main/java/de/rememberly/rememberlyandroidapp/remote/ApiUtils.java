@@ -8,8 +8,11 @@ public class ApiUtils {
     public static UserService getUserService(String url) {
         return RetrofitClient.getClient(url).create(UserService.class);
     }
-    public static String getCredentialString(String username, String password) {
+    static String getCredentialString(String username, String password) {
         return Credentials.basic(username, password);
+    }
+    static String getTokenString(String token) {
+        return "Bearer " + token;
     }
 
 }

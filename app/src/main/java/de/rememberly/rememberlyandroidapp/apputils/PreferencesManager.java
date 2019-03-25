@@ -84,6 +84,9 @@ public class PreferencesManager {
         sharedPreferences = context.getSharedPreferences("API_SETTINGS", Context.MODE_PRIVATE);
         return sharedPreferences.getString("serverurl", "NOT_SET");
     }
+    public static void clearCredentials(Context context) {
+        context.getSharedPreferences("API_SETTINGS", Context.MODE_PRIVATE).edit().clear().commit();
+    }
 //    public static void storeIV(String iv, Context context) {
 //        SharedPreferences sharedPreferences;
 //        SharedPreferences.Editor spEditor;
