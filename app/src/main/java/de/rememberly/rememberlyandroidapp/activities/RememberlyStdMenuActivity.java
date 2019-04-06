@@ -28,7 +28,7 @@ public class RememberlyStdMenuActivity extends AnimationActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
     protected void disableBackButton() {
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(false);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import de.rememberly.rememberlyandroidapp.R;
@@ -31,8 +34,9 @@ import de.rememberly.rememberlyandroidapp.remote.APICall;
 import de.rememberly.rememberlyandroidapp.activities.NoteActivity;
 
 
-public class NoteOverviewAdapter extends RecyclerView.Adapter<NoteOverviewAdapter.noteViewHolder> {
+public class NoteOverviewAdapter extends RecyclerView.Adapter<NoteOverviewAdapter.noteViewHolder> implements Filterable {
     private ArrayList<Note> noteData;
+    private ArrayList<Note> noteDataFiltered;
     private NoteOverviewActivity noteOverviewActivity;
     private APICall apiCall;
 
@@ -50,6 +54,7 @@ public class NoteOverviewAdapter extends RecyclerView.Adapter<NoteOverviewAdapte
     }
     public NoteOverviewAdapter(NoteOverviewActivity noteOverviewActivity, ArrayList<Note> dataset) {
         this.noteData = dataset;
+        this.noteDataFiltered = dataset;
         this.noteOverviewActivity = noteOverviewActivity;
         this.apiCall = new APICall(PreferencesManager.getURL(noteOverviewActivity));
     }
@@ -275,9 +280,40 @@ public class NoteOverviewAdapter extends RecyclerView.Adapter<NoteOverviewAdapte
         noteData.clear();
         notifyItemRangeRemoved(0, size);
     }
+
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return noteData.size();
+        return noteDataFiltered.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String charString = constraint.toString();
+                if (charString.isEmpty()) {
+                    noteDataFiltered = noteData;
+                } else {
+                    ArrayList<Note> filteredList = new ArrayList<>();
+                    for (Note row : noteData) {
+                        if (row.getNoteCategory().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(row);
+                        }
+                    }
+                    noteDataFiltered = filteredList;
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = noteDataFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                noteDataFiltered = (ArrayList<Note>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 }

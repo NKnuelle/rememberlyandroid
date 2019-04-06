@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/categoriemenu"
+        app:showAsAction="always"
+        android:icon="@drawable/rememberly_categories"
+        app:actionViewClass="android.widget.Spinner"
+        android:title="@string/categories"/>
+    <!-- "Mark Favorite", should appear as action button if possible -->
+    <item
+        android:id="@+id/actionLogout"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="@string/actionLogout"
+        app:showAsAction="never"/>
+
+</menu>
+

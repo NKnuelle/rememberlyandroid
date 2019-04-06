@@ -14,6 +14,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,8 +53,8 @@ public class TodoActivity extends RememberlyStdMenuActivity implements IApiCallb
         setContentView(R.layout.activity_todo);
 
         // set background animation:
-        NestedScrollView scrollView = findViewById(R.id.AnimationRootLayout);
-        super.setupAnimation(scrollView);
+        LinearLayout linearLayout = findViewById(R.id.AnimationRootLayout);
+        super.setupAnimation(linearLayout);
         Toolbar mainToolbar = (Toolbar) findViewById(R.id.mainToolbar);
         super.setupStdToolbar(mainToolbar);
 

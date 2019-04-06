@@ -44,6 +44,7 @@ public class TodolistActivity extends RememberlyStdMenuActivity implements IApiC
         LinearLayout linearLayout = findViewById(R.id.AnimationRootLayout);
         super.setupAnimation(linearLayout);
         Toolbar mainToolbar = (Toolbar) findViewById(R.id.mainToolbar);
+        mainToolbar.setTitle(R.string.todolists);
         super.setupStdToolbar(mainToolbar);
 
         todoRecyclerView = findViewById(R.id.listRecyclerView);

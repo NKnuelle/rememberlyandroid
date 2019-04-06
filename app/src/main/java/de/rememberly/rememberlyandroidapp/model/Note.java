@@ -7,7 +7,7 @@ package de.rememberly.rememberlyandroidapp.model;
  */
 public class Note extends HttpResponse {
 
-    public Note(String changedAt, String noteName, String noteID, String owner, String isShared, String noteContent, String noteDirectory) {
+    public Note(String changedAt, String noteName, String noteID, String owner, String isShared, String noteContent, String noteCategory) {
         this.changedAt = changedAt;
         this.noteName = noteName;
         this.noteID = noteID;
@@ -66,12 +66,12 @@ public class Note extends HttpResponse {
         this.noteContent = noteContent;
     }
 
-    public String getNoteDirectory() {
-        return noteDirectory;
+    public String getNoteCategory() {
+        return noteCategory;
     }
 
-    public void setNoteDirectory(String noteDirectory) {
-        this.noteDirectory = noteDirectory;
+    public void setNoteCategory(String noteCategory) {
+        this.noteCategory = noteCategory;
     }
 
     private String noteContent;
@@ -80,7 +80,7 @@ public class Note extends HttpResponse {
     private String noteID;
     private String owner;
     private String isShared;
-    private String noteDirectory;
+    private String noteCategory;
 
     public boolean isShared() {
         return (isShared.equals("1"));

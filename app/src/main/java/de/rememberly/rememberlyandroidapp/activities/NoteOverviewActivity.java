@@ -1,16 +1,23 @@
 package de.rememberly.rememberlyandroidapp.activities;
 
+import android.support.v7.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +26,10 @@ import java.util.List;
 
 import de.rememberly.rememberlyandroidapp.R;
 import de.rememberly.rememberlyandroidapp.adapter.NoteOverviewAdapter;
+import de.rememberly.rememberlyandroidapp.apputils.StringValidator;
+import de.rememberly.rememberlyandroidapp.apputils.ThreadedDatabaseAccess;
+import de.rememberly.rememberlyandroidapp.controller.CategoryListener;
+import de.rememberly.rememberlyandroidapp.controller.DialogController;
 import de.rememberly.rememberlyandroidapp.model.HttpResponse;
 import de.rememberly.rememberlyandroidapp.model.Note;
 import de.rememberly.rememberlyandroidapp.remote.APICall;
@@ -26,16 +37,17 @@ import de.rememberly.rememberlyandroidapp.apputils.PreferencesManager;
 import de.rememberly.rememberlyandroidapp.model.Token;
 import de.rememberly.rememberlyandroidapp.remote.IApiCallback;
 
-public class NoteOverviewActivity extends RememberlyStdMenuActivity implements IApiCallback {
+public class NoteOverviewActivity extends AnimationActivity implements IApiCallback {
     private RecyclerView listRecyclerView;
     private NoteOverviewAdapter noteOverviewAdapter;
     private RecyclerView.LayoutManager listManager;
     private APICall apiCall;
     private ArrayList<Note> noteData = new ArrayList<Note>();
-    ;
     private ImageButton addButton;
     private EditText listAddEdittext;
     private SwipeRefreshLayout swipeContainer;
+    private ArrayList<String> categories = new ArrayList<>();
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +57,13 @@ public class NoteOverviewActivity extends RememberlyStdMenuActivity implements I
         LinearLayout linearLayout = findViewById(R.id.AnimationRootLayout);
         super.setupAnimation(linearLayout);
         Toolbar mainToolbar = (Toolbar) findViewById(R.id.mainToolbar);
-        super.setupStdToolbar(mainToolbar);
+        mainToolbar.setTitle(R.string.notes);
+        setSupportActionBar(mainToolbar);
+        this.actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        // setup database
+        setupDatabase();
 
         listRecyclerView = findViewById(R.id.listRecyclerView);
         listManager = new LinearLayoutManager(this);
@@ -148,8 +166,61 @@ public class NoteOverviewActivity extends RememberlyStdMenuActivity implements I
             noteData.add(note);
             noteOverviewAdapter.notifyItemInserted(noteData.size() - 1);
         }
+        // ^setupSpinner();
     }
     public void showMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu_with_categories, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.actionLogout:
+                // User chose the "Settings" item, show the app settings UI...
+                PreferencesManager.clearCredentials(this);
+                Intent intent = new Intent(NoteOverviewActivity.this, LoginActivity.class);
+                startActivity(intent);
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+    private void setupSpinner() {
+        ThreadedDatabaseAccess.getAllCategoryNames(getDatabase(), this);
+        Spinner spinner = (Spinner) findViewById(R.id.categoriemenu);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(spinnerAdapter);
+        CategoryListener categoryListener = new CategoryListener(this);
+        spinner.setOnItemSelectedListener(categoryListener);
+    }
+    public void filterByCategory(String category) {
+        noteOverviewAdapter.getFilter().filter(category);
+    }
+    public void showNewCategoryDialog() {
+        DialogController dialogController = new DialogController();
+        dialogController.showNewCategoryDialog(this);
+    }
+    public void updateCategories(String[] categoryNames) {
+        categories.clear();
+        for (String name : categoryNames) {
+            if (!StringValidator.isEmptyOrNull(name)
+                    && !categories.contains(name)) {
+                categories.add(name);
+            }
+        }
+        categories.add(getResources().getString(R.string.addCategory));
+
     }
 }

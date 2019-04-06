@@ -23,10 +23,21 @@
     <string name="title_activity_maps">MapsActivity</string>
     <string name="noticeEditorTitle">Notice Title</string>
     <string name="buttonDesc">buttonDesc</string>
-    <string name="loginMessage">Logging in...</string>
+    <string name="loginMessage">Logging in &#8230;</string>
     <string name="loginActivityHeading">Login</string>
     <string name="urlHint">Server URL</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="connect">Connect</string>
+    <string name="categories">Categories</string>
+    <string name="doneButton">Done</string>
+    <string name="rename">Rename</string>
+    <string name="share">Share</string>
+    <string name="delete">Delete</string>
+    <string name="notes">Notes</string>
+    <string name="todolists">Todolists</string>
+    <string name="addCategory">+ New Category</string>
+    <string name="newCategoryMessage">Add a new category: </string>
+    <string name="newCategoryTitle">New Category</string>
+    <string name="categoryPosButton">Add Category</string>
 </resources>
