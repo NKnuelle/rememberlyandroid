@@ -48,6 +48,8 @@ public class NoteOverviewActivity extends AnimationActivity implements IApiCallb
     private SwipeRefreshLayout swipeContainer;
     private ArrayList<String> categories = new ArrayList<>();
     private ActionBar actionBar;
+    private ArrayAdapter<String> spinnerAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,11 @@ public class NoteOverviewActivity extends AnimationActivity implements IApiCallb
 
         // setup database
         setupDatabase();
+
+        //setup categories
+        spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         listRecyclerView = findViewById(R.id.listRecyclerView);
         listManager = new LinearLayoutManager(this);
@@ -175,6 +182,9 @@ public class NoteOverviewActivity extends AnimationActivity implements IApiCallb
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu_with_categories, menu);
+        MenuItem item = menu.findItem(R.id.categoriemenu);
+        Spinner spinner = (Spinner) item.getActionView();
+        setupSpinner(spinner);
         return true;
     }
     @Override
@@ -194,12 +204,8 @@ public class NoteOverviewActivity extends AnimationActivity implements IApiCallb
 
         }
     }
-    private void setupSpinner() {
+    private void setupSpinner(Spinner spinner) {
         ThreadedDatabaseAccess.getAllCategoryNames(getDatabase(), this);
-        Spinner spinner = (Spinner) findViewById(R.id.categoriemenu);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         spinner.setAdapter(spinnerAdapter);
         CategoryListener categoryListener = new CategoryListener(this);
@@ -221,6 +227,7 @@ public class NoteOverviewActivity extends AnimationActivity implements IApiCallb
             }
         }
         categories.add(getResources().getString(R.string.addCategory));
+        // spinnerAdapter.notifyDataSetChanged();
 
     }
 }

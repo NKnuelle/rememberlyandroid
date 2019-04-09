@@ -13,7 +13,7 @@ import de.rememberly.rememberlyandroidapp.activities.NoteOverviewActivity;
 public class CategoryListener implements AdapterView.OnItemSelectedListener {
 
 
-    NoteOverviewActivity noteOverviewActivity;
+    private NoteOverviewActivity noteOverviewActivity;
     public CategoryListener(NoteOverviewActivity noteOverviewActivity) {
         this.noteOverviewActivity = noteOverviewActivity;
     }
